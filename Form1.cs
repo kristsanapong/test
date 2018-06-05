@@ -73,14 +73,14 @@ namespace test
 		{
 			//Write
 			string txt="hello world\r\n";
-			string ans = txt;
+			string ans = "";
 			string txtNum = this.txtNum.Text;
 			this.Text = txtNum;
 			int num = int.Parse(this.txtNum.Text);
-			for (int i = 1; i < num; i++)
+			for (int i = 0; i < num; i++)
 			{
 				ans = ans + txt;
-				this.txtBox.Text = i.ToString();
+				//this.txtBox.Text = i.ToString();
 			}
 			File.WriteAllText("Files.txt", ans);
 			//File.WriteAllText("Files.txt",txt);
