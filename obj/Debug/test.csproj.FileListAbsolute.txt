@@ -8,3 +8,4 @@ C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.csproj.Genera
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.csproj.CoreCompileInputs.cache
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.exe
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.pdb
+C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.Form2.resources
