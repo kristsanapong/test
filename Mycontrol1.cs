@@ -135,6 +135,13 @@ namespace test
 				Controls.Remove(C);
 				Controls.Add(Mypanel);
 			}
+			/*if (ModifierKeys == Keys.Delete) {
+				foreach (Control Mypanel in Controls) {
+					if (Mypanel.BackColor == Color.Yellow) {
+						Controls.Remove(Mypanel);
+					}
+				}
+			}*/
 		}
 
 		private void Select_MouseMove(object sender, MouseEventArgs e)
