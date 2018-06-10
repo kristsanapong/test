@@ -9,3 +9,4 @@ C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.csproj.CoreCo
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.exe
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.pdb
 C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.Form2.resources
+C:\Users\Instance\Desktop\internship\test\test\test\obj\Debug\test.Mycontrol1.resources

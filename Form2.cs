@@ -13,15 +13,12 @@ namespace test
 {
 	public partial class Form2 : Form
 	{
-		int x;
-		int y;
 		public Form2()
 		{
 			InitializeComponent();
-
-
+			mycontrol11.KeyDown += new KeyEventHandler(mycontrol11_KeyDown);
+			//button1.ContextMenuStrip = new ContextMenuStrip();
 		}
-
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 
@@ -30,7 +27,8 @@ namespace test
 		{
 			panel1.Controls.Clear();
 			int num = int.Parse(this.txtNum1.Text);
-			for (int i = 0; i < num; i++)
+			mycontrol11.Mybutt1_Click(num);
+			/*for (int i = 0; i < num; i++)
 			{
 				Panel Mypanel1 = new Panel();
 				Mypanel1.Size = new Size(10, 10);
@@ -43,9 +41,9 @@ namespace test
 				Mypanel.MouseDown += Button_MouseDown;
 				Mypanel.MouseUp += Button_MouseUp;
 				Mypanel.MouseMove += Button_MouseMove;
-			}
+			}*/
 		}
-
+		/*
 		private void Button_MouseDown(object sender, MouseEventArgs e)
 		{
 			x = e.X;
@@ -53,7 +51,7 @@ namespace test
 			Control c = (Control)sender;
 			c.BackColor = Color.Yellow;
 		}
-
+		
 		private void Button_MouseUp(object sender, MouseEventArgs e)
 		{
 			Control c = (Control)sender;
@@ -68,11 +66,7 @@ namespace test
 				c.Location = new Point(e.X + c.Left - x, e.Y + c.Top - y);
 			}
 		}
-
-
-
-
-
+		*/
 		private void onclick_panel(Panel Mypanel1)
 		{
 			//......
@@ -90,9 +84,10 @@ namespace test
 
 		private void button2_Click(object sender, EventArgs e)
 		{
+			mycontrol11.Savefiles();
 			//Panel p = (Panel)sender;
 			//this.button2.Click += new EventHandler(this.button2_Click);
-			using (FileStream stream = new FileStream("answer.bin", FileMode.Create))
+			/*using (FileStream stream = new FileStream("answer.bin", FileMode.Create))
 			{
 				using (BinaryWriter writer = new BinaryWriter(stream))
 				{
@@ -102,12 +97,18 @@ namespace test
 					}
 					writer.Close();
 				}
-			}
+			}*/
+		}
+
+		private void mycontrol11_KeyDown(object sender, KeyEventArgs e) {
+			
+
 		}
 
 		private void button3_Click(object sender, EventArgs e)
 		{
-			panel1.Controls.Clear();
+			mycontrol11.Loadfiles();
+			/*panel1.Controls.Clear();
 			using (FileStream fs = new FileStream("answer.bin", FileMode.Open)) {
 				using (BinaryReader r = new BinaryReader(fs))
 				{
@@ -121,7 +122,6 @@ namespace test
 						Mypanel1.BackColor = Color.Blue;
 						this.panel1.Controls.Add(Mypanel1);
 					}
-					
 				}
 			}
 			foreach (Control Mypanel in this.panel1.Controls)
@@ -130,6 +130,29 @@ namespace test
 				Mypanel.MouseUp += Button_MouseUp;
 				Mypanel.MouseMove += Button_MouseMove;
 			}
+			*/
+		}
+
+		private void mycontrol11_Load(object sender, EventArgs e)
+		{
+			
+		}
+
+		private void button4_Click(object sender, EventArgs e)
+		{
+			
+		}
+
+		private void Form2_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (ModifierKeys == Keys.Control)
+			{
+				Console.WriteLine("Ctrl+Click");
+			}
+		}
+
+		private void Form2_Load(object sender, EventArgs e)
+		{
 
 		}
 
