@@ -25,17 +25,18 @@ namespace test
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
 			KeyDown += Selectall;
-			KeyDown += Delete_Button;
 			//MouseDown += Selected;
 		}
 		public void Delete_Button(object sender, KeyEventArgs e) {
-			if (e.KeyCode == Keys.Delete) {
-				foreach (Control Mypanel in Controls) {
-					if (Mypanel.BackColor == Color.Yellow) {
-						Controls.Remove(Mypanel);
-					}
+			//if (e.KeyCode == Keys.Delete) {
+			foreach (Control Mypanel in Controls)
+			{
+				if (Mypanel.BackColor == Color.Yellow)
+				{
+					Controls.Remove(Mypanel);
 				}
 			}
+			//}
 		}
 		public void Selectall(object sender, KeyEventArgs e)
 		{
@@ -70,6 +71,9 @@ namespace test
 
 				}
 				*/
+			}
+			if (e.KeyCode == Keys.Delete) {
+				Controls.Clear();
 			}
 		}
 		private void SelectAll_MouseDown(object sender, MouseEventArgs e)
