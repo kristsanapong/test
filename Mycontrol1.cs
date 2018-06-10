@@ -25,9 +25,18 @@ namespace test
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
 			KeyDown += Selectall;
+			KeyDown += Delete_Button;
 			//MouseDown += Selected;
 		}
-
+		public void Delete_Button(object sender, KeyEventArgs e) {
+			if (e.KeyCode == Keys.Delete) {
+				foreach (Control Mypanel in Controls) {
+					if (Mypanel.BackColor == Color.Yellow) {
+						Controls.Remove(Mypanel);
+					}
+				}
+			}
+		}
 		public void Selectall(object sender, KeyEventArgs e)
 		{
 			int c = Controls.Count;
@@ -84,6 +93,7 @@ namespace test
 				//newPanel.BackColor = Color.Blue;
 				Controls.Add(newPanel);
 
+				newPanel.MouseUp += Selected;
 				newPanel.MouseDown += Button_MouseDown;
 				newPanel.MouseUp += Button_MouseUp;
 				newPanel.MouseMove += Button_MouseMove;
@@ -223,6 +233,7 @@ namespace test
 	public void Mybutt1_Click(int num)
 		{
 			Controls.Clear();
+			
 			for (int i = 0; i < num; i++)
 			{
 				Panel Mypanel1 = new Panel();
