@@ -25,6 +25,7 @@ namespace test
 		}
 		private void button1_Click(object sender, EventArgs e)
 		{
+
 			panel1.Controls.Clear();
 			int num = int.Parse(this.txtNum1.Text);
 			mycontrol11.Mybutt1_Click(num);
@@ -142,15 +143,6 @@ namespace test
 		{
 			
 		}
-
-		private void Form2_MouseClick(object sender, MouseEventArgs e)
-		{
-			if (ModifierKeys == Keys.Control)
-			{
-				Console.WriteLine("Ctrl+Click");
-			}
-		}
-
 		private void Form2_Load(object sender, EventArgs e)
 		{
 

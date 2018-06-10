@@ -20,38 +20,49 @@ namespace test
 			InitializeComponent();
 			/*ControlMover.Init(this);
 			ControlMover.Init(this, ControlMover.Direction.Vertical);
-		*/}
+		*/
+		}
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
-			
+			KeyDown += Selectall;
+			//MouseDown += Selected;
 		}
 
 		public void Selectall(object sender, KeyEventArgs e)
 		{
-
 			int c = Controls.Count;
 			if (e.Control & e.KeyCode == Keys.A)
 			{
-				foreach (Control Mypanel in Controls) {
+				foreach (Control Mypanel in Controls)
+				{
 					Panel newPanel = new Panel();
 					newPanel.BackColor = Color.Yellow;
 					newPanel.Size = new Size(10, 10);
 					newPanel.Location = Mypanel.Location;
 					//newPanel.BackColor = Color.Blue;
 					Controls.Add(newPanel);
-
+					//Mypanel.BackColor = Color.Yellow;
 					newPanel.MouseDown += SelectAll_MouseDown;
 					newPanel.MouseUp += SelectAll_MouseUp;
 					newPanel.MouseMove += SelectAll_MouseMove;
 					//Mypanel.MouseDown += MoveAll;
 					//Init(newPanel);
 				}
-				for (int i = 0; i < c; i++) {
+				for (int i = 0; i < c; i++)
+				{
 					Controls.RemoveAt(0);
 				}
+				/*if (e.KeyCode == Keys.Delete)
+				{
+					for (int i = 0; i < c; i++)
+					{
+						Controls.RemoveAt(0);
+					}
+
+				}
+				*/
 			}
 		}
-		
 		private void SelectAll_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left)
@@ -94,19 +105,74 @@ namespace test
 			}
 		}
 
-		public void Mouseexit(object sender, EventArgs e) {
-
-			foreach (Control Mypanel in Controls)
+		public void Selected(object sender, MouseEventArgs e)
+		{
+			if (ModifierKeys == Keys.Control)
 			{
-				Mypanel.BackColor = Color.Blue;
+				//Console.WriteLine("Success");
+				Control C = (Control)sender;
+				Panel Mypanel = new Panel();
+				Mypanel.Size = new Size(10, 10);
+				Mypanel.Location = C.Location;
+				Mypanel.BackColor = Color.Yellow;
+				Mypanel.MouseUp += Select_MouseUp;
+				Mypanel.MouseDown += Select_MouseDown;
+				Mypanel.MouseMove += Select_MouseMove;
+				Controls.Remove(C);
+				Controls.Add(Mypanel);
 			}
 		}
 
-		public void Selected()
+		private void Select_MouseMove(object sender, MouseEventArgs e)
 		{
+			if (e.Button == MouseButtons.Left)
+			{
+				foreach (Control Mypanel in Controls)
+				{
+					if (Mypanel.BackColor == Color.Yellow)
+					{
+						Mypanel.Location = new Point(e.X + Mypanel.Left - x, e.Y + Mypanel.Top - y);
+					}
+				}
+				
+			}
+		}
+		private void Select_MouseDown(object sender, MouseEventArgs e)
+		{
+			x = e.X;
+			y = e.Y;
+			if (ModifierKeys == Keys.Control)
+			{
+				Control con = (Control)sender;
+				con.BackColor = Color.Yellow;
+			}
 			
 		}
-		
+
+		private void Select_MouseUp(object sender, MouseEventArgs e)
+		{
+			int c = Controls.Count;
+			foreach (Control Mypanel in Controls)
+			{
+				Panel newPanel = new Panel();
+				newPanel.BackColor = Color.Blue;
+				newPanel.Size = new Size(10, 10);
+				newPanel.Location = Mypanel.Location;
+				//newPanel.BackColor = Color.Blue;
+				Controls.Add(newPanel);
+				//Controls.RemoveAt(0);
+				newPanel.MouseUp += Selected;
+
+				newPanel.MouseDown += Button_MouseDown;
+				newPanel.MouseUp += Button_MouseUp;
+				newPanel.MouseMove += Button_MouseMove;
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				Controls.RemoveAt(0);
+			}
+		}
+
 		public enum Direction
 		{
 			Any,
@@ -157,8 +223,6 @@ namespace test
 	public void Mybutt1_Click(int num)
 		{
 			Controls.Clear();
-			KeyDown += Selectall;
-			MouseClick += Mouseexit;
 			for (int i = 0; i < num; i++)
 			{
 				Panel Mypanel1 = new Panel();
@@ -168,8 +232,9 @@ namespace test
 				Controls.Add(Mypanel1);
 				//onclick_panel(Mypanel1);
 			}
-			foreach (Control Mypanel in this.Controls)
+			foreach (Control Mypanel in Controls)
 			{
+				Mypanel.MouseUp += Selected;
 				Mypanel.MouseDown += Button_MouseDown;
 				Mypanel.MouseUp += Button_MouseUp;
 				Mypanel.MouseMove += Button_MouseMove;
@@ -223,8 +288,15 @@ namespace test
 
 		private void Button_MouseDown(object sender, MouseEventArgs e)
 		{
+			//if (ModifierKeys == Keys.Control)
+			//{
+				//foreach (Control Mypanel in Controls) {
+				//	Mypanel.MouseDown += Selected;
+				//}
+			//}
 			x = e.X;
 			y = e.Y;
+		//	MouseDown += Select_Move;
 			Control c = (Control)sender;
 			c.BackColor = Color.Yellow;
 		}
@@ -233,6 +305,7 @@ namespace test
 		{
 			Control c = (Control)sender;
 			c.BackColor = Color.Blue;
+
 		}
 
 		private void Button_MouseMove(object sender, MouseEventArgs e)
@@ -243,6 +316,5 @@ namespace test
 				c.Location = new Point(e.X + c.Left - x, e.Y + c.Top - y);
 			}
 		}
-		
 	}
 }
