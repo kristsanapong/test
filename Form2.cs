@@ -145,8 +145,21 @@ namespace test
 		}
 		private void Form2_Load(object sender, EventArgs e)
 		{
+			//txtHistory.Text = ToString();
+		}
+
+		private void txtHistory_TextChanged(object sender, EventArgs e)
+		{
 
 		}
+
+		private void button5_Click(object sender, EventArgs e)
+		{
+			//txtHistory.Text = ToString();
+			txtHistory.Text = mycontrol11.RefreshHxbox();
+		}
+
+
 
 
 		/*private void panel1_MouseUp(object sender, MouseEventArgs e)

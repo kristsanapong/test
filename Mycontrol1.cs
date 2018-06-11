@@ -22,35 +22,87 @@ namespace test
 			ControlMover.Init(this, ControlMover.Direction.Vertical);
 		*/
 		}
+		enum HistoryCommand {
+			Unknown,
+			PanelChange,
+			ColorChange
+		}
+		List<PanelObjectHistory> _objHxList = new List<PanelObjectHistory>();
+		List<Panel> SelectedPanels = new List<Panel>();
+		List<int> SelectedNumbers = new List<int>();
+
+
+		class PanelObjectHistory {
+			public Panel targetPanel;
+			public int x;
+			public int y;
+			public Color color;
+			public HistoryCommand command;
+
+
+			public override string ToString()
+			{
+				if (targetPanel.Tag != null)
+				{
+					return command + "." + (int)targetPanel.Tag + "." + x + "," + y + color;
+				}
+				else {
+					return command + "." + x + "," + y + color;
+				}
+			}
+		}
+	
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
 			KeyDown += Selectall;
-			//MouseDown += Selected;
+			//MouseDown += Mycontrol1_MouseDown; ;
+			//KeyDown += Delete_Button;
 		}
-		public void Delete_Button(object sender, KeyEventArgs e) {
-			//if (e.KeyCode == Keys.Delete) {
-			foreach (Control Mypanel in Controls)
+		public string RefreshHxbox()
+		{
+			StringBuilder stbuilder = new StringBuilder();
+			int j = _objHxList.Count;
+			for (int i = 0; i < j; ++i)
 			{
-				if (Mypanel.BackColor == Color.Yellow)
+				stbuilder.AppendLine(_objHxList[i].ToString());
+			}
+			return stbuilder.ToString();
+			// = stbuilder.ToString();
+		}
+
+		private void Mycontrol1_MouseDown(object sender, MouseEventArgs e)
+		{
+			//throw new NotImplementedException();
+		}
+
+		public void Delete_Button(object sender, MouseEventArgs e)
+		{
+			if (ModifierKeys == Keys.Delete)
+			{
+				foreach (Control Mypanel in SelectedPanels)
 				{
 					Controls.Remove(Mypanel);
 				}
+
 			}
-			//}
 		}
+
 		public void Selectall(object sender, KeyEventArgs e)
 		{
 			int c = Controls.Count;
 			if (e.Control & e.KeyCode == Keys.A)
 			{
+				
 				foreach (Control Mypanel in Controls)
 				{
 					Panel newPanel = new Panel();
 					newPanel.BackColor = Color.Yellow;
 					newPanel.Size = new Size(10, 10);
 					newPanel.Location = Mypanel.Location;
+					newPanel.Tag = Mypanel.Tag;
 					//newPanel.BackColor = Color.Blue;
 					Controls.Add(newPanel);
+					SelectedPanels.Add(newPanel);
 					//Mypanel.BackColor = Color.Yellow;
 					newPanel.MouseDown += SelectAll_MouseDown;
 					newPanel.MouseUp += SelectAll_MouseUp;
@@ -60,21 +112,24 @@ namespace test
 				}
 				for (int i = 0; i < c; i++)
 				{
+					SelectedPanels[i].BackColor = Color.Yellow;
+					PanelObjectHistory hx = new PanelObjectHistory();
+					hx.targetPanel = SelectedPanels[i];
+					hx.color = SelectedPanels[i].BackColor;
+					hx.command = HistoryCommand.ColorChange;
+					_objHxList.Add(hx);
+				}
+				for (int i = 0; i < c; i++)
+				{
 					Controls.RemoveAt(0);
 				}
-				/*if (e.KeyCode == Keys.Delete)
-				{
-					for (int i = 0; i < c; i++)
-					{
-						Controls.RemoveAt(0);
-					}
-
-				}
-				*/
+				MouseUp += Delete_Button;
 			}
-			if (e.KeyCode == Keys.Delete) {
-				Controls.Clear();
-			}
+			//else if (e.KeyCode == Keys.Delete) { Controls.Clear(); }
+		
+			//if (e.KeyCode == Keys.Delete) {
+			//	Controls.Clear();
+			//}
 		}
 		private void SelectAll_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -83,7 +138,6 @@ namespace test
 				x = e.X;
 				y = e.Y;
 			}
-			//throw new NotImplementedException();
 		}
 
 		private void SelectAll_MouseUp(object sender, MouseEventArgs e)
@@ -105,7 +159,16 @@ namespace test
 			for (int i = 0; i < c;i++) {
 				Controls.RemoveAt(0);
 			}
+			PanelObjectHistory hx = new PanelObjectHistory();
+			hx.targetPanel = (Panel)sender;
+			hx.x = e.X;
+			hx.y = e.Y;
+			hx.command = HistoryCommand.PanelChange;
+			_objHxList.Add(hx);
 
+			//...
+			System.Console.WriteLine(hx.ToString());
+			RefreshHxbox();
 		}
 
 		public void SelectAll_MouseMove(object sender,MouseEventArgs e)
@@ -121,8 +184,10 @@ namespace test
 
 		public void Selected(object sender, MouseEventArgs e)
 		{
+			int c = Controls.Count;
 			if (ModifierKeys == Keys.Control)
 			{
+				
 				//Console.WriteLine("Success");
 				Control C = (Control)sender;
 				Panel Mypanel = new Panel();
@@ -134,11 +199,29 @@ namespace test
 				Mypanel.MouseMove += Select_MouseMove;
 				Controls.Remove(C);
 				Controls.Add(Mypanel);
+				SelectedPanels.Add(Mypanel);
+				//hx.command = HistoryCommand.ColorChange;
+				//_objHxList.Add(hx);
+				//SelectedPanels.Add(Mypanel);
 			}
+			int j = SelectedPanels.Count;
+			for (int i = 0; i < j; ++i)
+			{
+				//SelectedPanels[i].BackColor = Color.Green;
+				PanelObjectHistory hx = new PanelObjectHistory();
+				hx.targetPanel = SelectedPanels[i];
+				hx.color = SelectedPanels[i].BackColor;
+				hx.command = HistoryCommand.ColorChange;
+				_objHxList.Add(hx);
+			}
+
+
+			MouseUp += Delete_Button;
 			/*if (ModifierKeys == Keys.Delete) {
 				foreach (Control Mypanel in Controls) {
 					if (Mypanel.BackColor == Color.Yellow) {
 						Controls.Remove(Mypanel);
+						break;
 					}
 				}
 			}*/
@@ -155,7 +238,6 @@ namespace test
 						Mypanel.Location = new Point(e.X + Mypanel.Left - x, e.Y + Mypanel.Top - y);
 					}
 				}
-				
 			}
 		}
 		private void Select_MouseDown(object sender, MouseEventArgs e)
@@ -167,7 +249,6 @@ namespace test
 				Control con = (Control)sender;
 				con.BackColor = Color.Yellow;
 			}
-			
 		}
 
 		private void Select_MouseUp(object sender, MouseEventArgs e)
@@ -192,6 +273,16 @@ namespace test
 			{
 				Controls.RemoveAt(0);
 			}
+			PanelObjectHistory hx = new PanelObjectHistory();
+			hx.targetPanel = (Panel)sender;
+			hx.x = e.X;
+			hx.y = e.Y;
+			hx.command = HistoryCommand.PanelChange;
+			_objHxList.Add(hx);
+
+			//...
+			System.Console.WriteLine(hx.ToString());
+			RefreshHxbox();
 		}
 
 		public enum Direction
@@ -327,7 +418,16 @@ namespace test
 		{
 			Control c = (Control)sender;
 			c.BackColor = Color.Blue;
+			PanelObjectHistory hx = new PanelObjectHistory();
+			hx.targetPanel = (Panel)sender;
+			hx.x = e.X;
+			hx.y = e.Y;
+			hx.command = HistoryCommand.PanelChange;
+			_objHxList.Add(hx);
 
+			//...
+			System.Console.WriteLine(hx.ToString());
+			RefreshHxbox();
 		}
 
 		private void Button_MouseMove(object sender, MouseEventArgs e)
