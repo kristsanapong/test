@@ -60,7 +60,9 @@ namespace test
 		{
 			//Focus();
 			//KeyDown += Delete_Button;
-			//MouseDown += Clear_MouseDown;
+			MouseDown += Clear_MouseDown;
+			KeyDown += Selectall;
+
 		}
 		public string RefreshHxbox()
 		{
@@ -119,7 +121,7 @@ namespace test
 					_objHxList.Add(hx);
 				}*/
 			}
-			/*else if (e.KeyCode == Keys.Delete) {
+			else if (e.KeyCode == Keys.Delete) {
 				int j = SelectedPanels.Count;
 				if (e.KeyCode == Keys.Delete)
 				{
@@ -132,7 +134,7 @@ namespace test
 						SelectedPanels.Clear();
 					}
 				}
-			}*/
+			}
 		}
 		bool m_ismousedown;
 		int m_lastx;
@@ -145,6 +147,7 @@ namespace test
 
 				foreach (Control myPanel1 in Controls)
 				{
+					//myPanel1.KeyDown += Selectall;
 					myPanel1.MouseUp += Select_MouseUp;
 					myPanel1.MouseDown += Select_MouseDown;
 					myPanel1.MouseMove += Select_MouseMove;
@@ -314,7 +317,8 @@ namespace test
 				myPanel1.MouseUp += Select_MouseUp;
 				myPanel1.MouseDown += Select_MouseDown;
 				myPanel1.MouseMove += Select_MouseMove;
-				//myPanel1.KeyDown += Selectall;
+				myPanel1.KeyDown += Selectall;
+				//myPanel1.MouseDown += Clear_MouseDown;
 			}
 		}
 
@@ -379,9 +383,12 @@ namespace test
 			}
 			foreach (Control Mypanel in Controls)
 			{
+				Mypanel.Focus();
+				Mypanel.KeyDown += Selectall;
 				Mypanel.MouseDown += Select_MouseDown;
 				Mypanel.MouseUp += Select_MouseUp;
 				Mypanel.MouseMove += Select_MouseMove;
+				
 			}
 		}
 	}
