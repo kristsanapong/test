@@ -146,6 +146,7 @@ namespace test
 		private void Form2_Load(object sender, EventArgs e)
 		{
 			//txtHistory.Text = ToString();
+			
 		}
 
 		private void txtHistory_TextChanged(object sender, EventArgs e)
