@@ -39,6 +39,7 @@ namespace test
 			public Panel targetPanel;
 			public int x;
 			public int y;
+			public int locate;
 			public Color color;
 			public HistoryCommand command;
 
