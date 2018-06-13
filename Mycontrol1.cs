@@ -14,7 +14,7 @@ namespace test
 {
 	public partial class Mycontrol1 : UserControl
 	{
-		int x, y;
+		//int x, y;
 		public Mycontrol1()
 		{
 			InitializeComponent();
@@ -32,14 +32,15 @@ namespace test
 		List<PanelObjectHistory> _objHxList = new List<PanelObjectHistory>();
 		List<Panel> SelectedPanels = new List<Panel>();
 		List<int> SelectedNumbers = new List<int>();
-
+		List<MoveHx> UndoList = new List<MoveHx>();
+		List<MoveHx> RedoList = new List<MoveHx>();
 
 		class PanelObjectHistory
 		{
 			public Panel targetPanel;
 			public int x;
 			public int y;
-			public int locate;
+			//public int locate;
 			public Color color;
 			public HistoryCommand command;
 
@@ -48,7 +49,7 @@ namespace test
 			{
 				if (targetPanel.Tag != null)
 				{
-					return command + "." + (int)targetPanel.Tag + "." + x + "," + y + color;
+					return command + "." + (int)targetPanel.Tag + ". " + x + "," + y + color;
 				}
 				else
 				{
@@ -63,7 +64,6 @@ namespace test
 			//KeyDown += Delete_Button;
 			MouseDown += Clear_MouseDown;
 			KeyDown += Selectall;
-
 		}
 		public string RefreshHxbox()
 		{
@@ -89,14 +89,22 @@ namespace test
 			{
 				if (j > 0)
 				{
+					//Panel pickBtn = (Panel)sender;
+					
 					foreach (Panel deleter in SelectedPanels)
 					{
+						PanelObjectHistory hs = new PanelObjectHistory();
+						hs.targetPanel = deleter;
+						hs.command = HistoryCommand.Deleted;
+						_objHxList.Add(hs);
 						Controls.Remove(deleter);
 					}
 					SelectedPanels.Clear();
 				}
 			}
 		}
+		
+		//***********************************SelectAll & Multiple Select************************************
 
 		public void Selectall(object sender, KeyEventArgs e)
 		{
@@ -108,6 +116,13 @@ namespace test
 					Mypanel.BackColor = Color.Yellow;
 					if (!SelectedPanels.Contains(Mypanel))
 					{
+						PanelObjectHistory hs = new PanelObjectHistory();
+						hs.targetPanel = (Panel)sender;
+						hs.x = Mypanel.Left;
+						hs.y = Mypanel.Top;
+						hs.command = HistoryCommand.ColorChange;
+						hs.color = Color.Yellow;
+						_objHxList.Add(hs);
 						SelectedPanels.Add((Panel)Mypanel);
 					}
 				}
@@ -122,7 +137,8 @@ namespace test
 					_objHxList.Add(hx);
 				}*/
 			}
-			else if (e.KeyCode == Keys.Delete) {
+			else if (e.KeyCode == Keys.Delete)
+			{
 				int j = SelectedPanels.Count;
 				if (e.KeyCode == Keys.Delete)
 				{
@@ -136,106 +152,68 @@ namespace test
 					}
 				}
 			}
+			else if (e.Control & e.KeyCode == Keys.Y)
+			{
+				if (RedoList.Count > 0)
+				{
+					MoveHx latestHx = RedoList[RedoList.Count - 1];
+					RedoList.RemoveAt(RedoList.Count - 1);
+					latestHx.target.Location =
+					new Point(latestHx.x, latestHx.y);
+					//
+					UndoList.Add(latestHx);
+				}
+			}
+			else if (e.Control & e.KeyCode == Keys.Z)
+			{
+				if (UndoList.Count > 0)
+				{
+					MoveHx latestHx = UndoList[UndoList.Count - 1];
+					UndoList.RemoveAt(UndoList.Count - 1);
+					latestHx.target.Location =
+					new Point(latestHx.x, latestHx.y);
+					//
+					RedoList.Add(latestHx);
+				}
+			}
 		}
 		bool m_ismousedown;
 		int m_lastx;
 		int m_lasty;
-		public void Selected(object sender, MouseEventArgs e)
-		{
-			int c = Controls.Count;
-			if (ModifierKeys == Keys.Control)
-			{
-
-				foreach (Control myPanel1 in Controls)
-				{
-					//myPanel1.KeyDown += Selectall;
-					myPanel1.MouseUp += Select_MouseUp;
-					myPanel1.MouseDown += Select_MouseDown;
-					myPanel1.MouseMove += Select_MouseMove;
-					//Controls.Remove(C);
-				}
-
-				//SelectedPanels.Add(Mypanel);
-				//}
-				//Mypanel.MouseUp += Delete_Button;
-				//hx.command = HistoryCommand.ColorChange;
-				//_objHxList.Add(hx);
-				//SelectedPanels.Add(Mypanel);
-			}
-			int j = SelectedPanels.Count;
-
-			for (int i = 0; i < j; i++)
-			{
-				//SelectedPanels[i].BackColor = Color.Yellow;
-				PanelObjectHistory hx = new PanelObjectHistory();
-				hx.targetPanel = SelectedPanels[i];
-				hx.color = SelectedPanels[i].BackColor;
-				hx.command = HistoryCommand.ColorChange;
-				_objHxList.Add(hx);
-			}
-
-			/*if (ModifierKeys == Keys.Delete) {
-				foreach (Control Mypanel in Controls) {
-					if (Mypanel.BackColor == Color.Yellow) {
-						Controls.Remove(Mypanel);
-						break;
-					}
-				}
-			}*/
-		}
+		
 		private void Select_MouseUp(object sender, MouseEventArgs e)
 		{
 			m_ismousedown = false;
 			int c = SelectedPanels.Count;
 			if (ModifierKeys == Keys.Control)
 			{
+				Panel pickbTn = (Panel)sender;
 				//KeyDown += Delete_Button;
+				PanelObjectHistory hs = new PanelObjectHistory();
+				hs.targetPanel = pickbTn;
+				hs.command = HistoryCommand.ColorChange;
+				hs.x = pickbTn.Left;
+				hs.y = pickbTn.Top;
+				hs.color = Color.Yellow;
+				_objHxList.Add(hs);
 				return;
 			}
-			PanelObjectHistory hx = new PanelObjectHistory();
-			hx.targetPanel = (Panel)sender;
-			hx.x = e.X;
-			hx.y = e.Y;
-			hx.command = HistoryCommand.PanelChange;
-			_objHxList.Add(hx);
 			for (int i = 0; i < c; ++i)
 			{
+				Panel selecter = (Panel)sender;
+				PanelObjectHistory hx = new PanelObjectHistory();
+				hx.targetPanel = selecter;
+				hx.x = selecter.Top;
+				hx.y = selecter.Left;
+				hx.color = Color.Blue;
+				hx.command = HistoryCommand.PanelChange;
+				_objHxList.Add(hx);
 				SelectedPanels[0].BackColor = Color.Blue;
 				SelectedPanels.RemoveAt(0);
 			}
+			//	target.Location = new Point(e.X, e.Y);
+			
 
-			//if (ModifierKeys == Keys.Delete)
-			//{
-			//	Delete_Button();
-			//}
-			/*
-			int c = Controls.Count;
-			foreach (Control Mypanel in Controls)
-			{
-				Panel newPanel = new Panel();
-				newPanel.BackColor = Color.Blue;
-				newPanel.Size = new Size(10, 10);
-				newPanel.Location = Mypanel.Location;
-				//newPanel.BackColor = Color.Blue;
-				Controls.Add(newPanel);
-				SelectedPanels.Add(newPanel);
-				//Controls.RemoveAt(0);
-				newPanel.MouseUp += Selected;
-
-				newPanel.MouseDown += Button_MouseDown;
-				newPanel.MouseUp += Button_MouseUp;
-				newPanel.MouseMove += Button_MouseMove;
-			}
-			for (int i = 0; i < 5; i++)
-			{
-				Controls.RemoveAt(0);
-			}
-			*/
-			//KeyDown += Delete_Button;
-
-			//...
-			//System.Console.WriteLine(hx.ToString());
-			//RefreshHxbox();
 		}
 		private void Select_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -252,6 +230,7 @@ namespace test
 					pp.Location = new Point(pp.Left + dx, pp.Top + dy);
 				}
 			}
+			
 
 
 
@@ -277,29 +256,15 @@ namespace test
 			m_lasty = e.Y;
 			if (!SelectedPanels.Contains(p))
 			{
+				Control target = (Control)sender;
+				MoveHx moveHx = new MoveHx(target.Left, target.Top, target);
+				UndoList.Add(moveHx);
 				SelectedPanels.Add(p);
-			}
-
-			//}	/*x = e.X;
-			/*y = e.Y;
-			if (ModifierKeys == Keys.Control)
-			{
-				Control con = (Control)sender;
-				con.BackColor = Color.Yellow;
-				int j = SelectedPanels.Count;
-
-				for (int i = 0; i < j; ++i)
-				{
-					//SelectedPanels[i].BackColor = Color.Green;
-					PanelObjectHistory hx = new PanelObjectHistory();
-					hx.targetPanel = SelectedPanels[i];
-					hx.color = SelectedPanels[i].BackColor;
-					hx.command = HistoryCommand.ColorChange;
-					_objHxList.Add(hx);
-
-				}
-				//KeyDown += Delete_Button;
-			*/
+				//PanelObjectHistory hx = new PanelObjectHistory();
+				//hx.targetPanel = p;
+				//hx.command = HistoryCommand.ColorChange;
+				//_objHxList.Add(hx);
+			}			
 		}
 		private void Clear_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -324,7 +289,7 @@ namespace test
 		}
 
 
-		//*********************************Code from Form2********************************
+		//*********************************Code from Form2************************************
 
 		public void Mybutt1_Click(int num)
 		{
@@ -389,8 +354,71 @@ namespace test
 				Mypanel.MouseDown += Select_MouseDown;
 				Mypanel.MouseUp += Select_MouseUp;
 				Mypanel.MouseMove += Select_MouseMove;
-				
+
+			}
+		}
+
+
+		//***********************************Undo Redo*****************************************
+		class MoveHx
+		{
+			public readonly int x;
+			public readonly int y;
+			public readonly Control target;
+			public MoveHx(int x, int y, Control target)
+			{
+				this.x = x;
+				this.y = y;
+				this.target = target;
+			}
+			public override string ToString()
+			{
+				return x + "," + y;
 			}
 		}
 	}
 }
+
+/*public void Selected(object sender, MouseEventArgs e)
+		{
+			int c = Controls.Count;
+			if (ModifierKeys == Keys.Control)
+			{
+
+				foreach (Control myPanel1 in Controls)
+				{
+					//myPanel1.KeyDown += Selectall;
+					myPanel1.MouseUp += Select_MouseUp;
+					myPanel1.MouseDown += Select_MouseDown;
+					myPanel1.MouseMove += Select_MouseMove;
+					//Controls.Remove(C);
+				}
+
+				//SelectedPanels.Add(Mypanel);
+				//}
+				//Mypanel.MouseUp += Delete_Button;
+				//hx.command = HistoryCommand.ColorChange;
+				//_objHxList.Add(hx);
+				//SelectedPanels.Add(Mypanel);
+			}
+			int j = SelectedPanels.Count;
+
+			for (int i = 0; i < j; i++)
+			{
+				//SelectedPanels[i].BackColor = Color.Yellow;
+				PanelObjectHistory hx = new PanelObjectHistory();
+				hx.targetPanel = SelectedPanels[i];
+				hx.color = SelectedPanels[i].BackColor;
+				hx.command = HistoryCommand.ColorChange;
+				_objHxList.Add(hx);
+			}
+
+			if (ModifierKeys == Keys.Delete) {
+				foreach (Control Mypanel in Controls) {
+					if (Mypanel.BackColor == Color.Yellow) {
+						Controls.Remove(Mypanel);
+						break;
+					}
+				}
+			}
+		}*/
