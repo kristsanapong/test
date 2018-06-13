@@ -146,6 +146,8 @@ namespace test
 					{
 						foreach (Panel deleter in SelectedPanels)
 						{
+							MoveHx moveHx = new MoveHx(deleter.Left, deleter.Top, deleter);
+							UndoList.Add(moveHx);
 							Controls.Remove(deleter);
 						}
 						SelectedPanels.Clear();
@@ -158,8 +160,7 @@ namespace test
 				{
 					MoveHx latestHx = RedoList[RedoList.Count - 1];
 					RedoList.RemoveAt(RedoList.Count - 1);
-					latestHx.target.Location =
-					new Point(latestHx.x, latestHx.y);
+					latestHx.target.Location = new Point(latestHx.x, latestHx.y);
 					//
 					UndoList.Add(latestHx);
 				}
