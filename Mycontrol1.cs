@@ -114,6 +114,9 @@ namespace test
 				foreach (Control Mypanel in Controls)
 				{
 					Mypanel.BackColor = Color.Yellow;
+					Control target = Mypanel;
+					MoveHx moveHx = new MoveHx(target.Left, target.Top, target);
+					UndoList.Add(moveHx);
 					if (!SelectedPanels.Contains(Mypanel))
 					{
 						PanelObjectHistory hs = new PanelObjectHistory();
