@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Drawing.Drawing2D;
 
 
 namespace test
@@ -18,6 +19,7 @@ namespace test
 		public Mycontrol1()
 		{
 			InitializeComponent();
+			DoubleBuffered = true;
 			/*ControlMover.Init(this);
 			ControlMover.Init(this, ControlMover.Direction.Vertical);
 		*/
@@ -64,7 +66,13 @@ namespace test
 			//KeyDown += Delete_Button;
 			MouseDown += Clear_MouseDown;
 			KeyDown += Selectall;
+			MouseDown += Control_MouseDown;
+			MouseUp += Control_MouseUp;
+			MouseMove += Control_MouseMove;
 		}
+
+
+
 		public string RefreshHxbox()
 		{
 			StringBuilder stbuilder = new StringBuilder();
@@ -90,7 +98,7 @@ namespace test
 				if (j > 0)
 				{
 					//Panel pickBtn = (Panel)sender;
-					
+
 					foreach (Panel deleter in SelectedPanels)
 					{
 						PanelObjectHistory hs = new PanelObjectHistory();
@@ -103,7 +111,7 @@ namespace test
 				}
 			}
 		}
-		
+
 		//***********************************SelectAll & Multiple Select************************************
 
 		public void Selectall(object sender, KeyEventArgs e)
@@ -166,7 +174,12 @@ namespace test
 					latestHx.target.Location = new Point(latestHx.x, latestHx.y);
 					//
 					UndoList.Add(latestHx);
+
+
+					Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
 				}
+				//Console.WriteLine("");
+
 			}
 			else if (e.Control & e.KeyCode == Keys.Z)
 			{
@@ -174,17 +187,16 @@ namespace test
 				{
 					MoveHx latestHx = UndoList[UndoList.Count - 1];
 					UndoList.RemoveAt(UndoList.Count - 1);
-					latestHx.target.Location =
-					new Point(latestHx.x, latestHx.y);
-					//
+					latestHx.target.Location = new Point(latestHx.x, latestHx.y);
 					RedoList.Add(latestHx);
+					Console.WriteLine(RedoList.Count);
 				}
 			}
 		}
 		bool m_ismousedown;
 		int m_lastx;
 		int m_lasty;
-		
+
 		private void Select_MouseUp(object sender, MouseEventArgs e)
 		{
 			m_ismousedown = false;
@@ -216,7 +228,7 @@ namespace test
 				SelectedPanels.RemoveAt(0);
 			}
 			//	target.Location = new Point(e.X, e.Y);
-			
+
 
 		}
 		private void Select_MouseMove(object sender, MouseEventArgs e)
@@ -234,7 +246,7 @@ namespace test
 					pp.Location = new Point(pp.Left + dx, pp.Top + dy);
 				}
 			}
-			
+
 
 
 
@@ -268,7 +280,7 @@ namespace test
 				//hx.targetPanel = p;
 				//hx.command = HistoryCommand.ColorChange;
 				//_objHxList.Add(hx);
-			}			
+			}
 		}
 		private void Clear_MouseDown(object sender, MouseEventArgs e)
 		{
@@ -379,6 +391,94 @@ namespace test
 			{
 				return x + "," + y;
 			}
+		}
+
+
+
+		//****************************Regtangle Drag mouse************************************
+		/// <summary>
+		/// Initializes a new instance of the WindowsFormsApplication5.Form1 class
+		/// </summary>
+
+		private Point selectionStart;
+		private Point selectionEnd;
+		private Rectangle selection;
+		private bool mouseDown;
+
+		private void GetSelectedTextBoxes()
+		{
+
+			foreach (Panel c in Controls)
+			{
+				if (c is Control)
+				{
+					if (selection.IntersectsWith(c.Bounds))
+					{
+						c.BackColor = Color.Yellow;
+						SelectedPanels.Add(c);
+					}
+				}
+			}
+			//MouseDown += Clear_MouseDown;
+
+			// Replace with your input box
+			//MessageBox.Show("You selected " + SelectedPanels.Count + " textbox controls.");
+		}
+		private void Control_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (!mouseDown)
+			{
+				return;
+			}
+
+			selectionEnd = PointToClient(MousePosition);
+			SetSelectionRect();
+
+			Invalidate();
+		}
+
+		private void Control_MouseUp(object sender, MouseEventArgs e)
+		{
+			mouseDown = false;
+			SetSelectionRect();
+			Invalidate();
+
+			GetSelectedTextBoxes();
+		}
+
+		private void Control_MouseDown(object sender, MouseEventArgs e)
+		{
+			selectionStart = PointToClient(MousePosition);
+			mouseDown = true;
+		}
+
+
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			base.OnPaint(e);
+
+			if (mouseDown)
+			{
+				using (Pen pen = new Pen(Color.Black, 1F))
+				{
+					pen.DashStyle = DashStyle.Dash;
+					e.Graphics.DrawRectangle(pen, selection);
+				}
+			}
+		}
+
+		private void SetSelectionRect()
+		{
+			int x, y;
+			int width, height;
+
+			x = selectionStart.X > selectionEnd.X ? selectionEnd.X : selectionStart.X;
+			y = selectionStart.Y > selectionEnd.Y ? selectionEnd.Y : selectionStart.Y;
+
+			width = selectionStart.X > selectionEnd.X ? selectionStart.X - selectionEnd.X : selectionEnd.X - selectionStart.X;
+			height = selectionStart.Y > selectionEnd.Y ? selectionStart.Y - selectionEnd.Y : selectionEnd.Y - selectionStart.Y;
+
+			selection = new Rectangle(x, y, width, height);
 		}
 	}
 }
