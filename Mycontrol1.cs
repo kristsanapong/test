@@ -36,6 +36,8 @@ namespace test
 		List<int> SelectedNumbers = new List<int>();
 		List<MoveHx> UndoList = new List<MoveHx>();
 		List<MoveHx> RedoList = new List<MoveHx>();
+		List<int> MoveCountRedo = new List<int>();
+		List<int> MoveCountUndo = new List<int>();
 
 		class PanelObjectHistory
 		{
@@ -161,36 +163,45 @@ namespace test
 							UndoList.Add(moveHx);
 							Controls.Remove(deleter);
 						}
+						Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
 						SelectedPanels.Clear();
 					}
 				}
 			}
-			else if (e.Control & e.KeyCode == Keys.Y)
-			{
-				if (RedoList.Count > 0)
-				{
-					MoveHx latestHx = RedoList[RedoList.Count - 1];
-					RedoList.RemoveAt(RedoList.Count - 1);
-					latestHx.target.Location = new Point(latestHx.x, latestHx.y);
-					//
-					UndoList.Add(latestHx);
-
-
-					Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
-				}
-				//Console.WriteLine("");
-
-			}
+			
 			else if (e.Control & e.KeyCode == Keys.Z)
 			{
-				if (UndoList.Count > 0)
-				{
-					MoveHx latestHx = UndoList[UndoList.Count - 1];
-					UndoList.RemoveAt(UndoList.Count - 1);
-					latestHx.target.Location = new Point(latestHx.x, latestHx.y);
-					RedoList.Add(latestHx);
-					Console.WriteLine(RedoList.Count);
+				for (int i = 0; i < MoveCountUndo[MoveCountUndo.Count - 1]; i++) {
+					if (UndoList.Count > 0)
+					{
+						MoveHx latestHx = UndoList[UndoList.Count - 1];
+						RedoList.Add(latestHx);
+						//UndoList[UndoList.Count - 1].target.Location = new Point(UndoList[UndoList.Count - 1].x, UndoList[UndoList.Count - 1].y);
+						latestHx.target.Location = new Point(latestHx.x, latestHx.y);
+						UndoList.RemoveAt(UndoList.Count - 1);
+
+						Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
+					}
 				}
+				MoveCountRedo.Add(MoveCountUndo[MoveCountUndo.Count - 1]);
+				MoveCountUndo.Remove(MoveCountUndo[MoveCountUndo.Count - 1]);
+			}
+			else if (e.Control & e.KeyCode == Keys.Y)
+			{
+				for (int i = 0; i< MoveCountRedo[MoveCountRedo.Count-1];i++) {
+					if (RedoList.Count > 0)
+					{
+						MoveHx latestHx = RedoList[RedoList.Count - 1];
+						UndoList.Add(latestHx);
+						latestHx.target.Location = new Point(latestHx.x, latestHx.y);
+						RedoList.RemoveAt(RedoList.Count - 1);
+						//
+						Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
+					}
+					//Console.WriteLine("");
+				}
+				MoveCountUndo.Add(MoveCountRedo[MoveCountRedo.Count - 1]);
+				MoveCountRedo.Remove(MoveCountRedo[MoveCountRedo.Count - 1]);
 			}
 		}
 		bool m_ismousedown;
@@ -240,6 +251,9 @@ namespace test
 				int dx = e.X - m_lastx;
 				int dy = e.Y - m_lasty;
 				Panel p = (Panel)sender;
+				int number = SelectedPanels.Count;
+				MoveCountUndo.Add(number);
+				
 				foreach (Control cc in SelectedPanels)
 				{
 					Panel pp = (Panel)cc;
@@ -415,6 +429,8 @@ namespace test
 					if (selection.IntersectsWith(c.Bounds))
 					{
 						c.BackColor = Color.Yellow;
+						MoveHx moveHx = new MoveHx(c.Left, c.Top, c);
+						UndoList.Add(moveHx);
 						SelectedPanels.Add(c);
 					}
 				}
