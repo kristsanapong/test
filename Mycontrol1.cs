@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing.Drawing2D;
+using Newtonsoft.Json;
 
 
 namespace test
@@ -38,10 +39,9 @@ namespace test
 		List<MoveHx> RedoList = new List<MoveHx>();
 		List<int> MoveCountRedo = new List<int>();
 		List<int> MoveCountUndo = new List<int>();
-
 		class PanelObjectHistory
 		{
-			public Panel targetPanel;
+			public Control targetPanel;
 			public int x;
 			public int y;
 			//public int locate;
@@ -168,10 +168,11 @@ namespace test
 					}
 				}
 			}
-			
+
 			else if (e.Control & e.KeyCode == Keys.Z)
 			{
-				for (int i = 0; i < MoveCountUndo[MoveCountUndo.Count - 1]; i++) {
+				for (int i = 0; i < MoveCountUndo[MoveCountUndo.Count - 1]; i++)
+				{
 					if (UndoList.Count > 0)
 					{
 						MoveHx latestHx = UndoList[UndoList.Count - 1];
@@ -188,7 +189,8 @@ namespace test
 			}
 			else if (e.Control & e.KeyCode == Keys.Y)
 			{
-				for (int i = 0; i< MoveCountRedo[MoveCountRedo.Count-1];i++) {
+				for (int i = 0; i < MoveCountRedo[MoveCountRedo.Count - 1]; i++)
+				{
 					if (RedoList.Count > 0)
 					{
 						MoveHx latestHx = RedoList[RedoList.Count - 1];
@@ -253,7 +255,8 @@ namespace test
 				Panel p = (Panel)sender;
 				int number = SelectedPanels.Count;
 				MoveCountUndo.Add(number);
-				
+				//Console.WriteLine(number);
+
 				foreach (Control cc in SelectedPanels)
 				{
 					Panel pp = (Panel)cc;
@@ -372,7 +375,9 @@ namespace test
 						Mypanel1.Size = new Size(10, 10);
 						Mypanel1.Location = new Point(obj_left, obj_top);
 						Mypanel1.BackColor = Color.Blue;
+						Mypanel1.Tag = (int)r.BaseStream.Position;
 						Controls.Add(Mypanel1);
+						Console.Write(r.BaseStream.Position + "\n");
 					}
 
 				}
@@ -407,8 +412,12 @@ namespace test
 			}
 		}
 
-
-
+		class TargetUndo
+		{
+			public int x;
+			public int y;
+			public int target;
+		}
 		//****************************Regtangle Drag mouse************************************
 		/// <summary>
 		/// Initializes a new instance of the WindowsFormsApplication5.Form1 class
@@ -444,6 +453,7 @@ namespace test
 		{
 			if (!mouseDown)
 			{
+
 				return;
 			}
 
@@ -496,6 +506,160 @@ namespace test
 
 			selection = new Rectangle(x, y, width, height);
 		}
+
+		//*********************JSON*******************************
+		public class SelectUndo {
+			public int Select;
+		}
+		public void SaveJSON()
+		{
+			JsonSerializer serializer1 = new JsonSerializer();
+			JsonSerializer serializer2 = new JsonSerializer();
+			JsonSerializer serializer3 = new JsonSerializer();
+			//serializer.Converters.Add(new JavaScriptDateTimeConverter());
+			serializer1.NullValueHandling = NullValueHandling.Ignore;
+			List<TargetJSON> saveobj = new List<TargetJSON>();
+			List<TargetUndo> saveundo = new List<TargetUndo>();
+			List<SelectUndo> saveselect = new List<SelectUndo>();
+			using (StreamWriter sw = new StreamWriter("Save_JSON.txt"))
+			{
+				using (JsonWriter writer = new JsonTextWriter(sw))
+				{
+					foreach (Control c in Controls)
+					{
+						TargetJSON js = new TargetJSON();
+						js.x = c.Left;
+						js.y = c.Top;
+						saveobj.Add(js);
+					}
+					serializer1.Serialize(writer, saveobj);
+				}
+			}
+			using (StreamWriter se = new StreamWriter("Undo_JSON.txt"))
+			{
+				using (JsonWriter writer = new JsonTextWriter(se))
+				{
+					foreach (MoveHx c in UndoList)
+					{
+						TargetUndo js = new TargetUndo();
+						js.x = c.x;
+						js.y = c.y;
+						js.target = (int)c.target.Tag;
+						//for (int i = 0; i < MoveCountUndo.Count - 1; i++)
+						//{
+						//	js.SelectCount = MoveCountUndo[i - 1];
+						//}
+						saveundo.Add(js);
+					}
+					serializer2.Serialize(writer, saveundo);
+				}
+			}
+			using (StreamWriter st = new StreamWriter("SelectUndo_JSON.txt"))
+			{
+				//int cc = MoveCountUndo.Count;
+				using (JsonWriter writer = new JsonTextWriter(st))
+				{
+					for (int i = 0; i < MoveCountUndo.Count - 1; i++)
+					{
+						SelectUndo x = new SelectUndo();
+						x.Select = MoveCountUndo[i];
+						saveselect.Add(x);
+						//Console.WriteLine(MoveCountUndo[i]);
+					}
+					serializer2.Serialize(writer, saveselect);
+				}
+			}
+		}
+		public class TargetJSON
+		{
+			public int x;
+			public int y;
+		}
+		public void LoadJSON()
+		{
+			Controls.Clear();
+			UndoList.Clear();
+			RedoList.Clear();
+			MoveCountUndo.Clear();
+			MoveCountRedo.Clear();
+			List<TargetJSON> loadobj = new List<TargetJSON>();
+			using (FileStream f_p = new FileStream("Save_JSON.txt", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+
+					string json = file.ReadToEnd();
+					loadobj = JsonConvert.DeserializeObject<List<TargetJSON>>(json);
+
+					int count = loadobj.Count();
+					for (int i = 0; i < count; i++)
+					{
+						Panel myPanel1 = new Panel();
+						myPanel1.Size = new Size(10, 10);
+						myPanel1.Location = new Point(loadobj[i].x, loadobj[i].y);
+						myPanel1.BackColor = Color.Blue;
+						myPanel1.Tag = i;
+						Controls.Add(myPanel1);
+					}
+					f_p.Close();
+					Read_Pnl(Controls);
+				}
+			}
+			List<TargetUndo> undoobj = new List<TargetUndo>();
+			using (FileStream f_p = new FileStream("Undo_JSON.txt", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+
+					string json = file.ReadToEnd();
+					undoobj = JsonConvert.DeserializeObject<List<TargetUndo>>(json);
+
+					int count = undoobj.Count();
+					for (int i = 0; i < count; i++)
+					{
+						PanelObjectHistory newobj = new PanelObjectHistory();
+						Control xx = new Control();
+						newobj.x = undoobj[i].x;
+						newobj.y = undoobj[i].y;
+						xx.Location = new Point(i*10, i*10);
+						xx.Size = new Size(10, 10);
+						MoveHx moveHx = new MoveHx(newobj.x, newobj.y, xx);
+						UndoList.Add(moveHx);
+						//MoveCountUndo.Add(MoveCountRedo[MoveCountRedo.Count - 1]);
+					}
+					f_p.Close();
+					//Read_Pnl(Controls);
+					Read_Pnl(Controls);
+				}
+
+
+			}
+			List<SelectUndo> selectundoobj = new List<SelectUndo>();
+			using (FileStream f_p = new FileStream("SelectUndo_JSON.txt", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+					string json = file.ReadToEnd();
+					selectundoobj = JsonConvert.DeserializeObject<List<SelectUndo>>(json);
+
+					int count = selectundoobj.Count();
+					for (int i = 0; i < count; i++)
+					{
+						int newselect = selectundoobj[i].Select;
+						MoveCountUndo.Add(newselect);
+						//MoveCountUndo.Add(MoveCountRedo[MoveCountRedo.Count - 1]);
+					}
+					f_p.Close();
+					//Read_Pnl(Controls);
+					Read_Pnl(Controls);
+				}
+			}
+				//using (StreamReader file = File.OpenText("Save_JSON.txt")) {
+				//	JsonSerializer serializer = new JsonSerializer();
+				//	TargetJSON eiei1 = (TargetJSON)serializer.Deserialize(file, typeof(TargetJSON));
+				//	TargetUndo eiei2 = (TargetUndo)serializer.Deserialize(file, typeof(TargetUndo));
+				//}
+			}
 	}
 }
 

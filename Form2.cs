@@ -160,6 +160,16 @@ namespace test
 			txtHistory.Text = mycontrol11.RefreshHxbox();
 		}
 
+		private void button6_Click(object sender, EventArgs e)
+		{
+			mycontrol11.SaveJSON();
+		}
+
+		private void button7_Click(object sender, EventArgs e)
+		{
+			mycontrol11.LoadJSON();
+		}
+
 
 
 
