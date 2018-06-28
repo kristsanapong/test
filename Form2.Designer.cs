@@ -35,10 +35,15 @@
 			this.txtNum1 = new System.Windows.Forms.TextBox();
 			this.button4 = new System.Windows.Forms.Button();
 			this.txtHistory = new System.Windows.Forms.TextBox();
-			this.mycontrol11 = new test.Mycontrol1();
 			this.button5 = new System.Windows.Forms.Button();
 			this.button6 = new System.Windows.Forms.Button();
 			this.button7 = new System.Windows.Forms.Button();
+			this.TimeCheckBox = new System.Windows.Forms.CheckBox();
+			this.SpeedCheckBox = new System.Windows.Forms.CheckBox();
+			this.timerBtn = new System.Windows.Forms.Button();
+			this.mycontrol11 = new test.Mycontrol1();
+			this.button8 = new System.Windows.Forms.Button();
+			this.invokeValue = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -106,15 +111,6 @@
 			this.txtHistory.TabIndex = 7;
 			this.txtHistory.TextChanged += new System.EventHandler(this.txtHistory_TextChanged);
 			// 
-			// mycontrol11
-			// 
-			this.mycontrol11.BackColor = System.Drawing.Color.White;
-			this.mycontrol11.Location = new System.Drawing.Point(12, 150);
-			this.mycontrol11.Name = "mycontrol11";
-			this.mycontrol11.Size = new System.Drawing.Size(414, 268);
-			this.mycontrol11.TabIndex = 5;
-			this.mycontrol11.Load += new System.EventHandler(this.mycontrol11_Load);
-			// 
 			// button5
 			// 
 			this.button5.Location = new System.Drawing.Point(455, 8);
@@ -145,12 +141,78 @@
 			this.button7.UseVisualStyleBackColor = true;
 			this.button7.Click += new System.EventHandler(this.button7_Click);
 			// 
+			// TimeCheckBox
+			// 
+			this.TimeCheckBox.AutoSize = true;
+			this.TimeCheckBox.Location = new System.Drawing.Point(700, 42);
+			this.TimeCheckBox.Name = "TimeCheckBox";
+			this.TimeCheckBox.Size = new System.Drawing.Size(49, 17);
+			this.TimeCheckBox.TabIndex = 11;
+			this.TimeCheckBox.Text = "Time";
+			this.TimeCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.TimeCheckBox.UseVisualStyleBackColor = true;
+			this.TimeCheckBox.CheckedChanged += new System.EventHandler(this.TimeCheckBox_ChechedChanged);
+			// 
+			// SpeedCheckBox
+			// 
+			this.SpeedCheckBox.AutoSize = true;
+			this.SpeedCheckBox.Location = new System.Drawing.Point(700, 59);
+			this.SpeedCheckBox.Name = "SpeedCheckBox";
+			this.SpeedCheckBox.Size = new System.Drawing.Size(57, 17);
+			this.SpeedCheckBox.TabIndex = 12;
+			this.SpeedCheckBox.Text = "Speed";
+			this.SpeedCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.SpeedCheckBox.UseVisualStyleBackColor = true;
+			this.SpeedCheckBox.CheckedChanged += new System.EventHandler(this.SpeedCheckBox_CheckedChanged);
+			// 
+			// timerBtn
+			// 
+			this.timerBtn.Location = new System.Drawing.Point(619, 9);
+			this.timerBtn.Name = "timerBtn";
+			this.timerBtn.Size = new System.Drawing.Size(75, 23);
+			this.timerBtn.TabIndex = 13;
+			this.timerBtn.Text = "Start Undo";
+			this.timerBtn.UseVisualStyleBackColor = true;
+			this.timerBtn.Click += new System.EventHandler(this.timerBtn_Click);
+			// 
+			// mycontrol11
+			// 
+			this.mycontrol11.BackColor = System.Drawing.Color.White;
+			this.mycontrol11.Location = new System.Drawing.Point(12, 150);
+			this.mycontrol11.Name = "mycontrol11";
+			this.mycontrol11.Size = new System.Drawing.Size(414, 268);
+			this.mycontrol11.TabIndex = 5;
+			this.mycontrol11.Load += new System.EventHandler(this.mycontrol11_Load);
+			// 
+			// button8
+			// 
+			this.button8.Location = new System.Drawing.Point(700, 9);
+			this.button8.Name = "button8";
+			this.button8.Size = new System.Drawing.Size(75, 23);
+			this.button8.TabIndex = 14;
+			this.button8.Text = "Start Redo";
+			this.button8.UseVisualStyleBackColor = true;
+			this.button8.Click += new System.EventHandler(this.button8_Click);
+			// 
+			// invokeValue
+			// 
+			this.invokeValue.Location = new System.Drawing.Point(617, 40);
+			this.invokeValue.Name = "invokeValue";
+			this.invokeValue.Size = new System.Drawing.Size(77, 20);
+			this.invokeValue.TabIndex = 15;
+			this.invokeValue.TextChanged += new System.EventHandler(this.invokeValue_TextChanged);
+			// 
 			// Form2
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.invokeValue);
+			this.Controls.Add(this.button8);
+			this.Controls.Add(this.timerBtn);
+			this.Controls.Add(this.SpeedCheckBox);
+			this.Controls.Add(this.TimeCheckBox);
 			this.Controls.Add(this.button7);
 			this.Controls.Add(this.button6);
 			this.Controls.Add(this.button5);
@@ -183,5 +245,10 @@
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.Button button6;
 		private System.Windows.Forms.Button button7;
+		private System.Windows.Forms.CheckBox TimeCheckBox;
+		private System.Windows.Forms.CheckBox SpeedCheckBox;
+		private System.Windows.Forms.Button timerBtn;
+		private System.Windows.Forms.Button button8;
+		private System.Windows.Forms.TextBox invokeValue;
 	}
 }

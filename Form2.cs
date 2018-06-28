@@ -13,12 +13,14 @@ namespace test
 {
 	public partial class Form2 : Form
 	{
+	
 		public Form2()
 		{
 			InitializeComponent();
 			mycontrol11.KeyDown += new KeyEventHandler(mycontrol11_KeyDown);
 			//button1.ContextMenuStrip = new ContextMenuStrip();
 		}
+		public int value;
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 
@@ -29,45 +31,8 @@ namespace test
 			panel1.Controls.Clear();
 			int num = int.Parse(this.txtNum1.Text);
 			mycontrol11.Mybutt1_Click(num);
-			/*for (int i = 0; i < num; i++)
-			{
-				Panel Mypanel1 = new Panel();
-				Mypanel1.Size = new Size(10, 10);
-				Mypanel1.Location = new Point(i * 10, i * 10);
-				Mypanel1.BackColor = Color.Blue;
-				this.panel1.Controls.Add(Mypanel1);
-				//onclick_panel(Mypanel1);
-			}
-			foreach (Control Mypanel in this.panel1.Controls) {
-				Mypanel.MouseDown += Button_MouseDown;
-				Mypanel.MouseUp += Button_MouseUp;
-				Mypanel.MouseMove += Button_MouseMove;
-			}*/
+			
 		}
-		/*
-		private void Button_MouseDown(object sender, MouseEventArgs e)
-		{
-			x = e.X;
-			y = e.Y;
-			Control c = (Control)sender;
-			c.BackColor = Color.Yellow;
-		}
-		
-		private void Button_MouseUp(object sender, MouseEventArgs e)
-		{
-			Control c = (Control)sender;
-			c.BackColor = Color.Blue;
-		}
-
-		private void Button_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left)
-			{
-				Control c = (Control)sender;
-				c.Location = new Point(e.X + c.Left - x, e.Y + c.Top - y);
-			}
-		}
-		*/
 		private void onclick_panel(Panel Mypanel1)
 		{
 			//......
@@ -104,8 +69,7 @@ namespace test
 		private void mycontrol11_KeyDown(object sender, KeyEventArgs e) {
 			
 
-		}
-
+		} 
 		private void button3_Click(object sender, EventArgs e)
 		{
 			mycontrol11.Loadfiles();
@@ -168,6 +132,52 @@ namespace test
 		private void button7_Click(object sender, EventArgs e)
 		{
 			mycontrol11.LoadJSON();
+		}
+		
+		private void timerBtn_Click(object sender, EventArgs e)
+		{
+			if (SpeedCheckBox.Checked == true && TimeCheckBox.Checked == false)
+			{
+				mycontrol11.mode = 1;
+				mycontrol11.timecheck = 1;
+				//mycontrol11.value = invokeValue.Text;
+				value = int.Parse(this.invokeValue.Text);
+				mycontrol11.UndowithSpeed(value);
+			}
+			else if (TimeCheckBox.Checked == true && SpeedCheckBox.Checked == false) {
+				mycontrol11.timecheck = 1;
+				mycontrol11.mode = 3;
+				value = int.Parse(this.invokeValue.Text);
+				mycontrol11.UndowithTime(value);
+			}
+			//mycontrol11.MoveCountRedo.Add(mycontrol11.MoveCountUndo[mycontrol11.MoveCountUndo.Count - 1]);
+			//mycontrol11.MoveCountUndo.Remove(mycontrol11.MoveCountUndo[mycontrol11.MoveCountUndo.Count - 1]);
+		}
+
+		public void TimeCheckBox_ChechedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void SpeedCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void button8_Click(object sender, EventArgs e)
+		{
+			if (SpeedCheckBox.Checked == true)
+			{
+				mycontrol11.mode = 2;
+				mycontrol11.timecheck = 1;
+				value = int.Parse(this.invokeValue.Text);
+				mycontrol11.RedowithTimer(value);
+			}
+		}
+
+		private void invokeValue_TextChanged(object sender, EventArgs e)
+		{
+
 		}
 
 
