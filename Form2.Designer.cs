@@ -146,9 +146,9 @@
 			this.TimeCheckBox.AutoSize = true;
 			this.TimeCheckBox.Location = new System.Drawing.Point(700, 42);
 			this.TimeCheckBox.Name = "TimeCheckBox";
-			this.TimeCheckBox.Size = new System.Drawing.Size(49, 17);
+			this.TimeCheckBox.Size = new System.Drawing.Size(77, 17);
 			this.TimeCheckBox.TabIndex = 11;
-			this.TimeCheckBox.Text = "Time";
+			this.TimeCheckBox.Text = "Fixed Time";
 			this.TimeCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.TimeCheckBox.UseVisualStyleBackColor = true;
 			this.TimeCheckBox.CheckedChanged += new System.EventHandler(this.TimeCheckBox_ChechedChanged);
@@ -158,9 +158,9 @@
 			this.SpeedCheckBox.AutoSize = true;
 			this.SpeedCheckBox.Location = new System.Drawing.Point(700, 59);
 			this.SpeedCheckBox.Name = "SpeedCheckBox";
-			this.SpeedCheckBox.Size = new System.Drawing.Size(57, 17);
+			this.SpeedCheckBox.Size = new System.Drawing.Size(85, 17);
 			this.SpeedCheckBox.TabIndex = 12;
-			this.SpeedCheckBox.Text = "Speed";
+			this.SpeedCheckBox.Text = "Fixed Speed";
 			this.SpeedCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.SpeedCheckBox.UseVisualStyleBackColor = true;
 			this.SpeedCheckBox.CheckedChanged += new System.EventHandler(this.SpeedCheckBox_CheckedChanged);
