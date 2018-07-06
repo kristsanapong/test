@@ -1,4 +1,4 @@
-﻿namespace test
+﻿namespace SharpConnect
 {
 	partial class Form2
 	{
@@ -41,9 +41,10 @@
 			this.TimeCheckBox = new System.Windows.Forms.CheckBox();
 			this.SpeedCheckBox = new System.Windows.Forms.CheckBox();
 			this.timerBtn = new System.Windows.Forms.Button();
-			this.mycontrol11 = new test.Mycontrol1();
+			this.mycontrol11 = new SharpConnect.MyControl1();
 			this.button8 = new System.Windows.Forms.Button();
 			this.invokeValue = new System.Windows.Forms.TextBox();
+			this.button9 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -202,12 +203,23 @@
 			this.invokeValue.TabIndex = 15;
 			this.invokeValue.TextChanged += new System.EventHandler(this.invokeValue_TextChanged);
 			// 
+			// button9
+			// 
+			this.button9.Location = new System.Drawing.Point(455, 96);
+			this.button9.Name = "button9";
+			this.button9.Size = new System.Drawing.Size(156, 23);
+			this.button9.TabIndex = 16;
+			this.button9.Text = "Load Form Webserver";
+			this.button9.UseVisualStyleBackColor = true;
+			this.button9.Click += new System.EventHandler(this.button9_Click);
+			// 
 			// Form2
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.button9);
 			this.Controls.Add(this.invokeValue);
 			this.Controls.Add(this.button8);
 			this.Controls.Add(this.timerBtn);
@@ -239,7 +251,7 @@
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button3;
 		private System.Windows.Forms.TextBox txtNum1;
-		private Mycontrol1 mycontrol11;
+		private MyControl1 mycontrol11;
 		private System.Windows.Forms.Button button4;
 		private System.Windows.Forms.TextBox txtHistory;
 		private System.Windows.Forms.Button button5;
@@ -250,5 +262,6 @@
 		private System.Windows.Forms.Button timerBtn;
 		private System.Windows.Forms.Button button8;
 		private System.Windows.Forms.TextBox invokeValue;
+		private System.Windows.Forms.Button button9;
 	}
 }

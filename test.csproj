@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppHost.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +67,7 @@
     <Compile Include="Mycontrol1.Designer.cs">
       <DependentUpon>Mycontrol1.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -99,6 +101,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+    <Folder Include="Test2\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SharpConnect.WebServer\src\NET20\SharpConnect.WebServer\SharpConnect.WebServer.csproj">
+      <Project>{9960A15C-791D-4978-992F-69506CBCF2C7}</Project>
+      <Name>SharpConnect.WebServer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

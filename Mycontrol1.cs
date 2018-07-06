@@ -10,14 +10,22 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing.Drawing2D;
 using Newtonsoft.Json;
+using System.Net;
+using SharpConnect;
+using SharpConnect.WebServers;
+//using SharpConnect.WebServers;
+
+//using SharpConnect;
 
 
-namespace test
+
+namespace SharpConnect
 {
-	public partial class Mycontrol1 : UserControl
+	public partial class MyControl1 : UserControl
 	{
 		//int x, y;
-		public Mycontrol1()
+		SharpConnect.AppHost testApp;
+		public MyControl1()
 		{
 			InitializeComponent();
 			DoubleBuffered = true;
@@ -66,6 +74,32 @@ namespace test
 		public int timecheck;
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
+			//WEBSERVER
+
+			testApp = new SharpConnect.AppHost();
+			WebServer webServer = new WebServer(8080, true, testApp.HandleRequest);
+			//test websocket 
+
+
+			MyModule module = new MyModule();
+			module.DataArrived += Module_DataArrived;
+			testApp.RegisterModule(module);
+			testApp.RegisterModule(new MyModule2());
+			testApp.RegisterModule(new MyModule3());
+			testApp.RegisterModule(new MyAdvanceMathModule());
+			testApp.RegisterModule(new MMath1());
+			testApp.RegisterModule(new JSONLoad());
+
+
+			var webSocketServer = new WebSocketServer();
+			webSocketServer.SetOnNewConnectionContext(ctx =>
+			{
+				ctx.SetMessageHandler(testApp.HandleWebSocket);
+			});
+			webServer.WebSocketServer = webSocketServer;
+			webServer.Start();
+
+
 			//Focus();
 			//KeyDown += Delete_Button;
 			KeyDown += Selectall;
@@ -106,7 +140,7 @@ namespace test
 								   {
 									   if (latestHx.target.Left < latestHx.x)
 									   {
-										   latestHx.target.Left +=1;
+										   latestHx.target.Left += 1;
 									   }
 									   else
 									   {
@@ -215,7 +249,8 @@ namespace test
 						   timer1.Stop();
 					   }
 				   }
-				   if (mode == 3) { //Undo by time
+				   if (mode == 3)
+				   { //Undo by time
 					   if (timecheck == 1)
 					   {
 						   listcountundo = UndoList.Count;
@@ -231,7 +266,7 @@ namespace test
 						   timecheck = 2;
 					   }
 					   else if (timecheck == 2)
-					   {	
+					   {
 						   for (int i = 0; i < MoveCountUndo[MoveCountUndo.Count - 1]; i++)
 						   {
 							   MoveHx latestHx = RedoList[RedoList.Count - 1 - i];
@@ -351,6 +386,12 @@ namespace test
 		private void Mycontrol1_MouseDown(object sender, MouseEventArgs e)
 		{
 			//throw new NotImplementedException();
+		}
+		private void Module_DataArrived(object sender, UserUnHxListEventArgs e)
+		{
+
+
+
 		}
 
 		public void Delete_Button(object sender, KeyEventArgs e)
@@ -697,7 +738,7 @@ namespace test
 
 
 		//***********************************Undo Redo*****************************************
-		class MoveHx
+		public class MoveHx
 		{
 			public int x;
 			public int y;
@@ -709,7 +750,7 @@ namespace test
 			}
 		}
 
-		class TargetUndo
+		public class TargetUndo
 		{
 			public int X;
 			public int Y;
@@ -767,7 +808,6 @@ namespace test
 		{
 			if (!mouseDown)
 			{
-
 				return;
 			}
 
@@ -839,16 +879,38 @@ namespace test
 		{
 			public int Select;
 		}
+		//public class JSONsave {
+		//	JsonSerializer targetUndo;
+		//	JsonSerializer targetJson;
+		//	JsonSerializer selectUndo;
+		//}
+		public class JSONsave
+		{
+			public string SavePanel;
+			public string History;
+			public string ListCountHistory;
+		}
+		public string History1;
+		public string ListCountHistory1;
+		public string SavePanel1;
+		string listJSON;
+		public List<JSONsave> save = new List<JSONsave>();
+		public string content;
 		public void SaveJSON()
 		{
 			JsonSerializer serializer1 = new JsonSerializer();
 			JsonSerializer serializer2 = new JsonSerializer();
 			JsonSerializer serializer3 = new JsonSerializer();
+			JsonSerializer serializer4 = new JsonSerializer();
+
+			//List<JSONsave> jSONsaves = new List<JSONsave>();
+			//WebClient wb = new WebClient();
 			//serializer.Converters.Add(new JavaScriptDateTimeConverter());
 			serializer1.NullValueHandling = NullValueHandling.Ignore;
 			List<TargetJSON> saveobj = new List<TargetJSON>();
 			List<TargetUndo> saveundo = new List<TargetUndo>();
 			List<SelectUndo> saveselect = new List<SelectUndo>();
+			//string head[];
 			using (StreamWriter sw = new StreamWriter("SavePanel.json"))
 			{
 				using (JsonWriter writer = new JsonTextWriter(sw))
@@ -874,10 +936,6 @@ namespace test
 						js.X = c.x;
 						js.Y = c.y;
 						js.T = (int)c.target.Tag;
-						//for (int i = 0; i < MoveCountUndo.Count - 1; i++)
-						//{
-						//	js.SelectCount = MoveCountUndo[i - 1];
-						//}
 						saveundo.Add(js);
 					}
 					serializer2.Serialize(writer, saveundo);
@@ -885,19 +943,78 @@ namespace test
 			}
 			using (StreamWriter st = new StreamWriter("ListCountHistory.json"))
 			{
-				//int cc = MoveCountUndo.Count;
 				using (JsonWriter writer = new JsonTextWriter(st))
 				{
-					//for (int i = 0; i < MoveCountUndo.Count - 1; i++)
-					//{
-					//	SelectUndo x = new SelectUndo();
-					//	x.Select = MoveCountUndo[i];
-					//	saveselect.Add(x);
-					//	//Console.WriteLine(MoveCountUndo[i]);
-					//}
 					serializer2.Serialize(writer, MoveCountUndo);
 				}
 			}
+
+
+			WebClient wb1 = new WebClient();
+
+			JSONsave ss = new JSONsave();
+
+
+			List<TargetJSON> loadobj = new List<TargetJSON>();
+			using (FileStream f_p = new FileStream("SavePanel.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+					SavePanel1 = file.ReadToEnd();
+					loadobj = JsonConvert.DeserializeObject<List<TargetJSON>>(SavePanel1);
+					f_p.Close();
+					ss.SavePanel = SavePanel1;
+					//string test = wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", SavePanel1);
+				}
+			}
+
+			List<TargetUndo> undoobj = new List<TargetUndo>();
+			using (FileStream f_p = new FileStream("History.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+
+					History1 = file.ReadToEnd();
+					undoobj = JsonConvert.DeserializeObject<List<TargetUndo>>(History1);
+					f_p.Close();
+					ss.History = History1;
+
+				}
+			}
+
+			List<int> selectundoobj = new List<int>();
+			using (FileStream f_p = new FileStream("ListCountHistory.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+					ListCountHistory1 = file.ReadToEnd();
+					selectundoobj = JsonConvert.DeserializeObject<List<int>>(ListCountHistory1);
+					f_p.Close();
+					ss.ListCountHistory = ListCountHistory1;
+				}
+			}
+
+			listJSON = SavePanel1 + "|" + ListCountHistory1 + "|" + History1;
+			content = wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", listJSON);
+			//using (StreamWriter st = new StreamWriter("List.json"))
+			//{
+			//	using (JsonWriter writer = new JsonTextWriter(st))
+			//	{
+			//		serializer4.Serialize(writer, ss);
+			//	}
+			//}
+
+			//List<JSONsave> jsonobj = new List<JSONsave>();
+
+			//using (FileStream f_p = new FileStream("List.json", FileMode.Open))
+			//{
+			//	using (StreamReader file = new StreamReader(f_p))
+			//	{
+			//		string jsonData = file.ReadToEnd();
+			//		//jsonobj = JsonConvert.DeserializeObject<List<JSONsave>>(jsonData);
+			//		f_p.Close();
+			//	}
+			//}
 		}
 		public class TargetJSON
 		{
@@ -993,7 +1110,7 @@ namespace test
 		public void RedowithTimer(int value)
 		{
 			timer1.Interval = value;
-			timer1.Start();	
+			timer1.Start();
 		}
 		public void UndowithSpeed(int value)
 		{
@@ -1001,20 +1118,46 @@ namespace test
 			timer1.Start();
 		}
 		//Time_Undo();
-		public void UndowithTime(int value) {
-			int v,s;
+		public void UndowithTime(int value)
+		{
+			int v, s;
 			int x_distance = Math.Abs(UndoList[UndoList.Count - 1].target.Left - UndoList[UndoList.Count - 1].x);
 			int y_distance = Math.Abs(UndoList[UndoList.Count - 1].target.Top - UndoList[UndoList.Count - 1].y);
-			double distance = (Math.Sqrt((x_distance*x_distance)+(y_distance*y_distance)));
+			double distance = (Math.Sqrt((x_distance * x_distance) + (y_distance * y_distance)));
 			s = (int)distance;
-			time_value = value*1000;
-			v = (time_value)/s;
+			time_value = value * 1000;
+			v = (time_value) / s;
 			timer1.Interval = v;
 			timer1.Start();
 		}
 
-	}
+		public void WebServerPanel()
+		{
+			Controls.Clear();
+			UndoList.Clear();
+			RedoList.Clear();
+			MoveCountUndo.Clear();
+			MoveCountRedo.Clear();
 
+			List<MyControl1.TargetJSON> savePanels = new List<MyControl1.TargetJSON>();
+			List<MyControl1.TargetUndo> historyPanels = new List<MyControl1.TargetUndo>();
+			List<int> listCountHistory = new List<int>();
+			string s = content;
+			if (content != null)
+			{
+				string[] data = s.Split('|');
+				if (data.Length == 3)
+				{
+					savePanels = JsonConvert.DeserializeObject<List<MyControl1.TargetJSON>>(data[0]);
+					historyPanels = JsonConvert.DeserializeObject<List<MyControl1.TargetUndo>>(data[2]);
+					listCountHistory = JsonConvert.DeserializeObject<List<int>>(data[1]);
+
+
+				}
+
+			}
+		}
+	}
 }
 /*public void Selected(object sender, MouseEventArgs e)
 		{

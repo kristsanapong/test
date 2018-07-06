@@ -1,6 +1,6 @@
-﻿namespace test
+﻿namespace SharpConnect
 {
-	partial class Mycontrol1
+	partial class MyControl1
 	{
 		/// <summary> 
 		/// Required designer variable.

@@ -9,22 +9,30 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace test
+using SharpConnect;
+using SharpConnect.WebServers;
+using System.Net;
+
+
+
+namespace SharpConnect
 {
 	public partial class Form2 : Form
 	{
-	
 		public Form2()
 		{
 			InitializeComponent();
+
 			mycontrol11.KeyDown += new KeyEventHandler(mycontrol11_KeyDown);
 			//button1.ContextMenuStrip = new ContextMenuStrip();
+			
 		}
 		public int value;
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 
 		}
+
 		private void button1_Click(object sender, EventArgs e)
 		{
 
@@ -174,38 +182,14 @@ namespace test
 				mycontrol11.RedowithTimer(value);
 			}
 		}
-
 		private void invokeValue_TextChanged(object sender, EventArgs e)
 		{
 
 		}
 
-
-
-
-		/*private void panel1_MouseUp(object sender, MouseEventArgs e)
+		private void button9_Click(object sender, EventArgs e)
 		{
-			Control butt = (Control)sender;
-			//on website if (e.Button == MouseButtons.Left) PanelMouseDownLocation = e.Location;
+			mycontrol11.WebServerPanel();
 		}
-
-		private void panel1_MouseMove(object sender, MouseEventArgs e)
-		{
-			Control c = (Control)sender;
-			c.Location = new Point(e.X + c.Left - x, e.Y + c.Top - y);
-
-
-			//Point p = c.Location;
-			//....On website
-			if (e.Button == MouseButtons.Left)
-
-			{
-
-				panel1.Left += e.X - PanelMouseDownLocation.X;
-
-				panel1.Top += e.Y - PanelMouseDownLocation.Y;
-
-			}*/
-
 	}
 }
