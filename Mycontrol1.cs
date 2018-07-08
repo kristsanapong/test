@@ -23,8 +23,8 @@ namespace SharpConnect
 {
 	public partial class MyControl1 : UserControl
 	{
+
 		//int x, y;
-		SharpConnect.AppHost testApp;
 		public MyControl1()
 		{
 			InitializeComponent();
@@ -76,28 +76,7 @@ namespace SharpConnect
 		{
 			//WEBSERVER
 
-			testApp = new SharpConnect.AppHost();
-			WebServer webServer = new WebServer(8080, true, testApp.HandleRequest);
-			//test websocket 
-
-
-			MyModule module = new MyModule();
-			module.DataArrived += Module_DataArrived;
-			testApp.RegisterModule(module);
-			testApp.RegisterModule(new MyModule2());
-			testApp.RegisterModule(new MyModule3());
-			testApp.RegisterModule(new MyAdvanceMathModule());
-			testApp.RegisterModule(new MMath1());
-			testApp.RegisterModule(new JSONLoad());
-
-
-			var webSocketServer = new WebSocketServer();
-			webSocketServer.SetOnNewConnectionContext(ctx =>
-			{
-				ctx.SetMessageHandler(testApp.HandleWebSocket);
-			});
-			webServer.WebSocketServer = webSocketServer;
-			webServer.Start();
+			
 
 
 			//Focus();
@@ -387,13 +366,7 @@ namespace SharpConnect
 		{
 			//throw new NotImplementedException();
 		}
-		private void Module_DataArrived(object sender, UserUnHxListEventArgs e)
-		{
-
-
-
-		}
-
+		public string dataJSON;
 		public void Delete_Button(object sender, KeyEventArgs e)
 		{
 			int j = SelectedPanels.Count;
@@ -890,6 +863,7 @@ namespace SharpConnect
 			public string History;
 			public string ListCountHistory;
 		}
+		WebClient wb1 = new WebClient();
 		public string History1;
 		public string ListCountHistory1;
 		public string SavePanel1;
@@ -950,8 +924,6 @@ namespace SharpConnect
 			}
 
 
-			WebClient wb1 = new WebClient();
-
 			JSONsave ss = new JSONsave();
 
 
@@ -995,7 +967,10 @@ namespace SharpConnect
 			}
 
 			listJSON = SavePanel1 + "|" + ListCountHistory1 + "|" + History1;
-			content = wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", listJSON);
+			wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", listJSON);
+			//string result = wb1.UploadString("http://localhost:8080/MyModule/Go?a=20&b=20", listJSON);
+
+
 			//using (StreamWriter st = new StreamWriter("List.json"))
 			//{
 			//	using (JsonWriter writer = new JsonTextWriter(st))
@@ -1049,7 +1024,6 @@ namespace SharpConnect
 						Controls.Add(myPanel1);
 					}
 					f_p.Close();
-
 				}
 			}
 			List<TargetUndo> undoobj = new List<TargetUndo>();
@@ -1133,25 +1107,49 @@ namespace SharpConnect
 
 		public void WebServerPanel()
 		{
+			List<MyControl1.TargetJSON> savePanels = new List<MyControl1.TargetJSON>();
+			List<MyControl1.TargetUndo> historyPanels = new List<MyControl1.TargetUndo>();
+			List<int> listCountHistory = new List<int>();
+
 			Controls.Clear();
 			UndoList.Clear();
 			RedoList.Clear();
 			MoveCountUndo.Clear();
 			MoveCountRedo.Clear();
-
-			List<MyControl1.TargetJSON> savePanels = new List<MyControl1.TargetJSON>();
-			List<MyControl1.TargetUndo> historyPanels = new List<MyControl1.TargetUndo>();
-			List<int> listCountHistory = new List<int>();
-			string s = content;
-			if (content != null)
+			if (dataJSON != null)
 			{
-				string[] data = s.Split('|');
+				string[] data = dataJSON.Split('|');
 				if (data.Length == 3)
 				{
 					savePanels = JsonConvert.DeserializeObject<List<MyControl1.TargetJSON>>(data[0]);
 					historyPanels = JsonConvert.DeserializeObject<List<MyControl1.TargetUndo>>(data[2]);
 					listCountHistory = JsonConvert.DeserializeObject<List<int>>(data[1]);
-
+					int count1 = savePanels.Count();
+					for (int i = 0; i < count1; i++)
+					{
+						Panel myPanel1 = new Panel();
+						myPanel1.Size = new Size(10, 10);
+						myPanel1.Location = new Point(savePanels[i].X, savePanels[i].Y);
+						myPanel1.BackColor = Color.Red;
+						myPanel1.Tag = i;
+						Controls.Add(myPanel1);
+					}
+					int count2 = historyPanels.Count();
+					for (int i = 0; i < count2; i++)
+					{
+						foreach (Control pickobj in Controls)
+						{
+							if ((int)pickobj.Tag == historyPanels[i].T)
+							{
+								MoveHx moveHx = new MoveHx();
+								moveHx.x = historyPanels[i].X;
+								moveHx.y = historyPanels[i].Y;
+								moveHx.target = pickobj;
+								UndoList.Add(moveHx);
+							}
+						}
+					}
+					MoveCountUndo = listCountHistory;
 
 				}
 

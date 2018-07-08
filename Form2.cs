@@ -17,8 +17,10 @@ using System.Net;
 
 namespace SharpConnect
 {
+
 	public partial class Form2 : Form
 	{
+		SharpConnect.AppHost testApp;
 		public Form2()
 		{
 			InitializeComponent();
@@ -31,6 +33,34 @@ namespace SharpConnect
 		private void panel1_Paint(object sender, PaintEventArgs e)
 		{
 
+		}
+		private void Form2_Load(object sender, EventArgs e)
+		{
+			//txtHistory.Text = ToString();
+			testApp = new SharpConnect.AppHost();
+		
+			//test websocket 
+			JSONLoad jsons = new JSONLoad();
+			jsons.DataArrived3 += Module_DataArrived;
+			testApp.RegisterModule(new MyModule());
+			testApp.RegisterModule(new MyModule2());
+			testApp.RegisterModule(new MyModule3());
+			testApp.RegisterModule(new MyAdvanceMathModule());
+			testApp.RegisterModule(new MMath1());
+			testApp.RegisterModule(jsons);
+
+			WebServer webServer = new WebServer(8080, true, testApp.HandleRequest);
+			var webSocketServer = new WebSocketServer();
+			webSocketServer.SetOnNewConnectionContext(ctx =>
+			{
+				ctx.SetMessageHandler(testApp.HandleWebSocket);
+			});
+			webServer.WebSocketServer = webSocketServer;
+			webServer.Start();
+		}
+		private void Module_DataArrived(object sender, UserUnHxListEventArgs e)
+		{
+			mycontrol11.dataJSON = e.DataJSON;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -115,11 +145,7 @@ namespace SharpConnect
 		{
 			
 		}
-		private void Form2_Load(object sender, EventArgs e)
-		{
-			//txtHistory.Text = ToString();
-			
-		}
+		
 
 		private void txtHistory_TextChanged(object sender, EventArgs e)
 		{

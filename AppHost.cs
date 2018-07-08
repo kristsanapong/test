@@ -158,8 +158,6 @@ namespace SharpConnect
             string req_url = req.Url.ToLower();
             switch (req_url)
             {
-
-
                 case "/check_msg":
                     {
                         resp.End(CurrentServerMsg);

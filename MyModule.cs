@@ -180,10 +180,9 @@ namespace SharpConnect
     class UserUnHxListEventArgs : EventArgs
     {
         //...
-		public List<MyControl1.MoveHx> UndoList;
-		public List<MyControl1.MoveHx> RedoList;
+		public string DataJSON;
 		public List<int> MoveCountRedo;
-		public List<int> MoveCountUndo;
+
 	}
 	//3.
 	class MyModule
@@ -300,19 +299,21 @@ namespace SharpConnect
 	class JSONLoad
 	{
 		//public EventHandler<UserUnHxListEventArgs> DataArrived1;
-		public event EventHandler<UserUnHxListEventArgs> DataArrived;
-		List<MyControl1.JSONsave> loadobj = new List<MyControl1.JSONsave>();
-
+		public event EventHandler<UserUnHxListEventArgs> DataArrived3;
 		[HttpMethod]
 		public void SavePanel(HttpRequest req, HttpResponse resp)
 		{
-			//List<MyControl1.TargetJSON> savePanels = new List<MyControl1.TargetJSON>();
-			//List<MyControl1.TargetUndo> historyPanels = new List<MyControl1.TargetUndo>();
-			//List<int> listCountHistory = new List<int>();
-
-
 			string content = req.GetBodyContentAsString();
-			resp.End(content);
+			
+			UserUnHxListEventArgs evArgs = new UserUnHxListEventArgs();
+			if (DataArrived3 != null)
+			{
+				evArgs.DataJSON = content;
+				//evArgs.MoveCountRedo = null;//TODO: change to history list
+				DataArrived3(this, evArgs);
+			}
+			resp.End("Success");
+			
 			//string s = content;
 
 			//UserUnHxListEventArgs evArgs = new UserUnHxListEventArgs();
@@ -335,7 +336,6 @@ namespace SharpConnect
 			//		//DataArrived(this, evArgs);
 			//	}
 			//resp.End(savePanels);
-
 		}
 	}
 
