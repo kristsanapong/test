@@ -41,7 +41,7 @@ namespace SharpConnect
 		
 			//test websocket 
 			JSONLoad jsons = new JSONLoad();
-			jsons.DataArrived3 += Module_DataArrived;
+			jsons.DataArrived += Module_DataArrived;
 			testApp.RegisterModule(new MyModule());
 			testApp.RegisterModule(new MyModule2());
 			testApp.RegisterModule(new MyModule3());
@@ -49,7 +49,7 @@ namespace SharpConnect
 			testApp.RegisterModule(new MMath1());
 			testApp.RegisterModule(jsons);
 
-			WebServer webServer = new WebServer(8080, true, testApp.HandleRequest);
+			WebServer webServer = new WebServer(8080, false, testApp.HandleRequest);
 			var webSocketServer = new WebSocketServer();
 			webSocketServer.SetOnNewConnectionContext(ctx =>
 			{
@@ -60,7 +60,10 @@ namespace SharpConnect
 		}
 		private void Module_DataArrived(object sender, UserUnHxListEventArgs e)
 		{
-			mycontrol11.dataJSON = e.DataJSON;
+			if (e.DataJSON.Length > 2)
+			{
+				mycontrol11.dataJSON = e.DataJSON;
+			}
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -216,6 +219,21 @@ namespace SharpConnect
 		private void button9_Click(object sender, EventArgs e)
 		{
 			mycontrol11.WebServerPanel();
+		}
+
+		private void button10_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog opf = new OpenFileDialog();
+			opf.Filter = "Choose Image(*.jpg;*.png)|*.jpg;*.png ";
+
+			if (opf.ShowDialog() == DialogResult.OK) {
+				PictureBox newptb = new PictureBox();
+				newptb.Location = new Point(0, 0);
+				var image = Image.FromFile(opf.FileName);
+				newptb.Image = image;
+				mycontrol11.Controls.Add(newptb);
+				//mycontrol11.Read_Pnl(mycontrol11.Controls);
+			}
 		}
 	}
 }

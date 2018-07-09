@@ -13,10 +13,6 @@ using Newtonsoft.Json;
 using System.Net;
 using SharpConnect;
 using SharpConnect.WebServers;
-//using SharpConnect.WebServers;
-
-//using SharpConnect;
-
 
 
 namespace SharpConnect
@@ -24,14 +20,10 @@ namespace SharpConnect
 	public partial class MyControl1 : UserControl
 	{
 
-		//int x, y;
 		public MyControl1()
 		{
 			InitializeComponent();
 			DoubleBuffered = true;
-			/*ControlMover.Init(this);
-			ControlMover.Init(this, ControlMover.Direction.Vertical);
-		*/
 		}
 		enum HistoryCommand
 		{
@@ -74,13 +66,6 @@ namespace SharpConnect
 		public int timecheck;
 		private void Mycontrol1_Load(object sender, EventArgs e)
 		{
-			//WEBSERVER
-
-			
-
-
-			//Focus();
-			//KeyDown += Delete_Button;
 			KeyDown += Selectall;
 			MouseDown += Control_MouseDown;
 			MouseUp += Control_MouseUp;
@@ -359,7 +344,6 @@ namespace SharpConnect
 				stbuilder.AppendLine(_objHxList[i].ToString());
 			}
 			return stbuilder.ToString();
-			// = stbuilder.ToString();
 		}
 
 		private void Mycontrol1_MouseDown(object sender, MouseEventArgs e)
@@ -374,8 +358,6 @@ namespace SharpConnect
 			{
 				if (j > 0)
 				{
-					//Panel pickBtn = (Panel)sender;
-
 					foreach (Panel deleter in SelectedPanels)
 					{
 						PanelObjectHistory hs = new PanelObjectHistory();
@@ -468,19 +450,16 @@ namespace SharpConnect
 						newHx.target = newPx;
 						newHx.target.Tag = newPx.Tag;
 						RedoList.Add(newHx);
-						//Console.WriteLine(RedoList.Count);
 						latestHx.target.Location = new Point(latestHx.x, latestHx.y);
 						UndoList.RemoveAt(UndoList.Count - 1);
 					}
 					MoveCountRedo.Add(MoveCountUndo[MoveCountUndo.Count - 1]);
 					MoveCountUndo.RemoveAt(MoveCountUndo.Count - 1);
 
-					//MoveCountUndo.Remove(MoveCountUndo[MoveCountUndo.Count - 1]);
 				}
 			}
 			else if (e.Control & e.KeyCode == Keys.Y)
 			{
-				//Console.WriteLine(RedoList[RedoList.Count - 1].x + "," + RedoList[RedoList.Count - 1].y);
 
 				Console.WriteLine("Redo count is:" + MoveCountRedo.Count);
 				if (MoveCountRedo.Count > 0 && RedoList.Count > 0)
@@ -496,16 +475,10 @@ namespace SharpConnect
 						UndoList.Add(newHx);
 						latestHx.target.Location = new Point(latestHx.x, latestHx.y);
 						RedoList.RemoveAt(RedoList.Count - 1);
-						//
-						//Console.WriteLine(RedoList[i].target.Tag);
 						Console.WriteLine("Redo: " + RedoList.Count + "," + "Undo: " + UndoList.Count);
-						//Console.WriteLine("Redoxy is :"+latestHx.x + "," + latestHx.y);
-						//Console.WriteLine("");
 					}
 					MoveCountUndo.Add(MoveCountRedo[MoveCountRedo.Count - 1]);
 					MoveCountRedo.RemoveAt(MoveCountRedo.Count - 1);
-
-					//MoveCountRedo.Remove(MoveCountRedo[MoveCountRedo.Count - 1]);
 				}
 			}
 		}
@@ -520,7 +493,6 @@ namespace SharpConnect
 			if (ModifierKeys == Keys.Control)
 			{
 				Panel pickbTn = (Panel)sender;
-				//KeyDown += Delete_Button;
 				PanelObjectHistory hs = new PanelObjectHistory();
 				hs.targetPanel = pickbTn;
 				hs.command = HistoryCommand.ColorChange;
@@ -552,7 +524,6 @@ namespace SharpConnect
 				SelectedPanels.RemoveAt(0);
 			}
 			MoveCountUndo.Add(c);
-			//	target.Location = new Point(e.X, e.Y);
 		}
 		private void Select_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -568,18 +539,9 @@ namespace SharpConnect
 					pp.Location = new Point(pp.Left + dx, pp.Top + dy);
 				}
 			}
-			/*foreach (Control Mypanel in Controls)
-			{
-				if (Mypanel.BackColor == Color.Yellow)
-				{
-					Mypanel.Location = new Point(e.X + Mypanel.Left - x, e.Y + Mypanel.Top - y);
-				}
-			}*/
 		}
 		private void Select_MouseDown(object sender, MouseEventArgs e)
 		{
-			//if (e.Button == MouseButtons.Left)
-			//{
 			m_ismousedown = true;
 			var p = (Panel)sender;
 			p.BackColor = Color.Yellow;
@@ -594,10 +556,6 @@ namespace SharpConnect
 				moveHx.y = target.Top;
 				Console.WriteLine(target.Left + "tttt" + target.Top);
 				UndoList.Add(moveHx);
-				//PanelObjectHistory hx = new PanelObjectHistory();
-				//hx.targetPanel = p;
-				//hx.command = HistoryCommand.ColorChange;
-				//_objHxList.Add(hx);
 			}
 		}
 		private void Clear_MouseDown(object sender, MouseEventArgs e)
@@ -642,15 +600,18 @@ namespace SharpConnect
 			MoveCountRedo.Clear();
 			for (int i = 0; i < num; ++i)
 			{
+				TextBox txtBox1 = new TextBox();
 				Panel myPanel1 = new Panel();
-				myPanel1.Size = new Size(10, 10);
 				myPanel1.Location = new Point(i * 10, i * 10);
 				myPanel1.BackColor = Color.Blue;
 				myPanel1.Tag = i;
+				txtBox1.Size = new Size(100, 30);
+				myPanel1.Size = new Size(10,10);
+				txtBox1.Multiline = true;
+				txtBox1.Location = myPanel1.Location;
+				//Controls.Add(txtBox1);
 				Controls.Add(myPanel1);
-				//myPanel1.MouseDown += Button_MouseDown;
-				//myPanel1.MouseUp += Button_MouseUp;
-				//myPanel1.MouseMove += Button_MouseMove;
+				//Controls.Add(ptBox1);
 			}
 			Read_Pnl(this.Controls);
 		}
@@ -757,25 +718,8 @@ namespace SharpConnect
 					}
 				}
 			}
-
-			// Replace with your input box
-			//MessageBox.Show("You selected " + SelectedPanels.Count + " textbox controls.");
 		}
-		//protected override void OnMouseDown(MouseEventArgs e)
-		//{
-		//	selectionStart = PointToClient(MousePosition);
-		//	mouseDown = true;
-		//}
 
-		//protected override void OnMouseUp(MouseEventArgs e)
-		//{
-		//	mouseDown = false;
-
-		//	SetSelectionRect();
-		//	Invalidate();
-
-		//	GetSelectedTextBoxes();
-		//}
 
 		private void Control_MouseMove(object sender, MouseEventArgs e)
 		{
@@ -805,19 +749,6 @@ namespace SharpConnect
 			mouseDown = true;
 			//Select_MouseDown(this, e);
 		}
-
-		//protected override void OnMouseMove(MouseEventArgs e)
-		//{
-		//	if (!mouseDown)
-		//	{
-		//		return;
-		//	}
-
-		//	selectionEnd = PointToClient(MousePosition);
-		//	SetSelectionRect();
-
-		//	Invalidate();
-		//}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -863,7 +794,6 @@ namespace SharpConnect
 			public string History;
 			public string ListCountHistory;
 		}
-		WebClient wb1 = new WebClient();
 		public string History1;
 		public string ListCountHistory1;
 		public string SavePanel1;
@@ -872,6 +802,8 @@ namespace SharpConnect
 		public string content;
 		public void SaveJSON()
 		{
+			WebClient wb1 = new WebClient();
+
 			JsonSerializer serializer1 = new JsonSerializer();
 			JsonSerializer serializer2 = new JsonSerializer();
 			JsonSerializer serializer3 = new JsonSerializer();
@@ -965,31 +897,8 @@ namespace SharpConnect
 					ss.ListCountHistory = ListCountHistory1;
 				}
 			}
-
 			listJSON = SavePanel1 + "|" + ListCountHistory1 + "|" + History1;
-			wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", listJSON);
-			//string result = wb1.UploadString("http://localhost:8080/MyModule/Go?a=20&b=20", listJSON);
-
-
-			//using (StreamWriter st = new StreamWriter("List.json"))
-			//{
-			//	using (JsonWriter writer = new JsonTextWriter(st))
-			//	{
-			//		serializer4.Serialize(writer, ss);
-			//	}
-			//}
-
-			//List<JSONsave> jsonobj = new List<JSONsave>();
-
-			//using (FileStream f_p = new FileStream("List.json", FileMode.Open))
-			//{
-			//	using (StreamReader file = new StreamReader(f_p))
-			//	{
-			//		string jsonData = file.ReadToEnd();
-			//		//jsonobj = JsonConvert.DeserializeObject<List<JSONsave>>(jsonData);
-			//		f_p.Close();
-			//	}
-			//}
+			wb1.UploadString("http://10.80.19.132:8080/JSONLoad/SavePanel", listJSON);
 		}
 		public class TargetJSON
 		{
@@ -1009,10 +918,8 @@ namespace SharpConnect
 			{
 				using (StreamReader file = new StreamReader(f_p))
 				{
-
 					string json = file.ReadToEnd();
 					loadobj = JsonConvert.DeserializeObject<List<TargetJSON>>(json);
-
 					int count = loadobj.Count();
 					for (int i = 0; i < count; i++)
 					{
@@ -1033,8 +940,6 @@ namespace SharpConnect
 				{
 					string json = file.ReadToEnd();
 					undoobj = JsonConvert.DeserializeObject<List<TargetUndo>>(json);
-
-					//UndoList = undoobj;
 					int count = undoobj.Count();
 					for (int i = 0; i < count; i++)
 					{
@@ -1052,7 +957,6 @@ namespace SharpConnect
 					}
 					f_p.Close();
 				}
-
 			}
 			List<int> selectundoobj = new List<int>();
 			using (FileStream f_p = new FileStream("ListCountHistory.json", FileMode.Open))
@@ -1061,24 +965,13 @@ namespace SharpConnect
 				{
 					string json = file.ReadToEnd();
 					selectundoobj = JsonConvert.DeserializeObject<List<int>>(json);
-
 					int count = selectundoobj.Count();
 					Console.WriteLine(count);
 					MoveCountUndo = selectundoobj;
-					//for (int i = 0; i < count; i++)
-					//{
-					//	Console.WriteLine("Undolistis=" + SelectedNumbers[i]);
-					//	//SelectedNumbers.Add(MoveCountUndo[i]);
-					//}
 					f_p.Close();
 					Read_Pnl(Controls);
 				}
 			}
-			//using (StreamReader file = File.OpenText("Save_JSON.txt")) {
-			//	JsonSerializer serializer = new JsonSerializer();
-			//	TargetJSON eiei1 = (TargetJSON)serializer.Deserialize(file, typeof(TargetJSON));
-			//	TargetUndo eiei2 = (TargetUndo)serializer.Deserialize(file, typeof(TargetUndo));
-			//}
 		}
 		List<MoveHx> TimerUndo = new List<MoveHx>();
 		public void RedowithTimer(int value)
@@ -1091,7 +984,6 @@ namespace SharpConnect
 			timer1.Interval = value;
 			timer1.Start();
 		}
-		//Time_Undo();
 		public void UndowithTime(int value)
 		{
 			int v, s;
@@ -1107,10 +999,10 @@ namespace SharpConnect
 
 		public void WebServerPanel()
 		{
+			WebClient wb = new WebClient();
 			List<MyControl1.TargetJSON> savePanels = new List<MyControl1.TargetJSON>();
 			List<MyControl1.TargetUndo> historyPanels = new List<MyControl1.TargetUndo>();
 			List<int> listCountHistory = new List<int>();
-
 			Controls.Clear();
 			UndoList.Clear();
 			RedoList.Clear();
@@ -1122,15 +1014,15 @@ namespace SharpConnect
 				if (data.Length == 3)
 				{
 					savePanels = JsonConvert.DeserializeObject<List<MyControl1.TargetJSON>>(data[0]);
-					historyPanels = JsonConvert.DeserializeObject<List<MyControl1.TargetUndo>>(data[2]);
 					listCountHistory = JsonConvert.DeserializeObject<List<int>>(data[1]);
+					historyPanels = JsonConvert.DeserializeObject<List<MyControl1.TargetUndo>>(data[2]);
 					int count1 = savePanels.Count();
 					for (int i = 0; i < count1; i++)
 					{
 						Panel myPanel1 = new Panel();
 						myPanel1.Size = new Size(10, 10);
 						myPanel1.Location = new Point(savePanels[i].X, savePanels[i].Y);
-						myPanel1.BackColor = Color.Red;
+						myPanel1.BackColor = Color.Blue;
 						myPanel1.Tag = i;
 						Controls.Add(myPanel1);
 					}
@@ -1150,53 +1042,9 @@ namespace SharpConnect
 						}
 					}
 					MoveCountUndo = listCountHistory;
-
+					Read_Pnl(Controls);
 				}
-
 			}
 		}
 	}
 }
-/*public void Selected(object sender, MouseEventArgs e)
-		{
-			int c = Controls.Count;
-			if (ModifierKeys == Keys.Control)
-			{
-
-				foreach (Control myPanel1 in Controls)
-				{
-					//myPanel1.KeyDown += Selectall;
-					myPanel1.MouseUp += Select_MouseUp;
-					myPanel1.MouseDown += Select_MouseDown;
-					myPanel1.MouseMove += Select_MouseMove;
-					//Controls.Remove(C);
-				}
-
-				//SelectedPanels.Add(Mypanel);
-				//}
-				//Mypanel.MouseUp += Delete_Button;
-				//hx.command = HistoryCommand.ColorChange;
-				//_objHxList.Add(hx);
-				//SelectedPanels.Add(Mypanel);
-			}
-			int j = SelectedPanels.Count;
-
-			for (int i = 0; i < j; i++)
-			{
-				//SelectedPanels[i].BackColor = Color.Yellow;
-				PanelObjectHistory hx = new PanelObjectHistory();
-				hx.targetPanel = SelectedPanels[i];
-				hx.color = SelectedPanels[i].BackColor;
-				hx.command = HistoryCommand.ColorChange;
-				_objHxList.Add(hx);
-			}
-
-			if (ModifierKeys == Keys.Delete) {
-				foreach (Control Mypanel in Controls) {
-					if (Mypanel.BackColor == Color.Yellow) {
-						Controls.Remove(Mypanel);
-						break;
-					}
-				}
-			}
-		}*/

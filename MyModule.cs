@@ -182,7 +182,6 @@ namespace SharpConnect
         //...
 		public string DataJSON;
 		public List<int> MoveCountRedo;
-
 	}
 	//3.
 	class MyModule
@@ -299,18 +298,19 @@ namespace SharpConnect
 	class JSONLoad
 	{
 		//public EventHandler<UserUnHxListEventArgs> DataArrived1;
-		public event EventHandler<UserUnHxListEventArgs> DataArrived3;
+		public event EventHandler<UserUnHxListEventArgs> DataArrived;
 		[HttpMethod]
 		public void SavePanel(HttpRequest req, HttpResponse resp)
 		{
 			string content = req.GetBodyContentAsString();
-			
+
+
 			UserUnHxListEventArgs evArgs = new UserUnHxListEventArgs();
-			if (DataArrived3 != null)
+			if (DataArrived != null && content.Length > 2)
 			{
 				evArgs.DataJSON = content;
 				//evArgs.MoveCountRedo = null;//TODO: change to history list
-				DataArrived3(this, evArgs);
+				DataArrived(this, evArgs);
 			}
 			resp.End("Success");
 			

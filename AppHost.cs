@@ -197,11 +197,7 @@ namespace SharpConnect
                         {
                             //met.Invoke(myModule, new object[] { req, resp });
                             //met.Invoke(httpMethods, new object[] { req, resp });
-
-
                             met.Invoke(req, resp);
-
-
                         }
                         else
                         {
