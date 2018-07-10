@@ -510,6 +510,15 @@ namespace SharpConnect
 				UndoList.Add(moveHx);
 				return;
 			}
+			else if (c==1) {
+				Panel pickbTn = (Panel)sender;
+				MoveHx moveHx = UndoList[UndoList.Count - 1];
+				moveHx.target = pickbTn;
+				moveHx.x = UndoList[UndoList.Count - 1].x;
+				moveHx.y = UndoList[UndoList.Count - 1].y;
+				moveHx.target.Tag = UndoList[UndoList.Count - 1].target.Tag;
+				UndoList.Add(moveHx);
+			}
 			for (int i = 0; i < c; ++i)
 			{
 				Panel selecter = (Panel)sender;
@@ -606,7 +615,7 @@ namespace SharpConnect
 				myPanel1.BackColor = Color.Blue;
 				myPanel1.Tag = i;
 				txtBox1.Size = new Size(100, 30);
-				myPanel1.Size = new Size(10,10);
+				myPanel1.Size = new Size(10, 10);
 				txtBox1.Multiline = true;
 				txtBox1.Location = myPanel1.Location;
 				//Controls.Add(txtBox1);
@@ -1045,6 +1054,119 @@ namespace SharpConnect
 					Read_Pnl(Controls);
 				}
 			}
+
+		}
+		public string filePhotoPath;
+		public void ImportPictureBox()
+		{
+			Controls.Clear();
+			UndoList.Clear();
+			RedoList.Clear();
+			MoveCountUndo.Clear();
+			MoveCountRedo.Clear();
+			OpenFileDialog opf = new OpenFileDialog();
+			opf.Filter = "Choose Image(*.jpg;*.png)|*.jpg;*.png ";
+			if (opf.ShowDialog() == DialogResult.OK)
+			{
+				PictureBox newptb = new PictureBox();
+				Panel mypanel1 = new Panel();
+				mypanel1.Size = new Size(50, 50);
+				mypanel1.BackColor = Color.Blue;
+				newptb.Location = new Point(mypanel1.Left + 9, mypanel1.Top + 10);
+				var image = Image.FromFile(opf.FileName);
+				newptb.Image = image;
+				newptb.SizeMode = PictureBoxSizeMode.StretchImage;
+				newptb.Size = new Size(32, 32);
+				newptb.Tag = 0;
+				mypanel1.Controls.Add(newptb);
+				Controls.Add(mypanel1);
+				filePhotoPath = opf.FileName;
+				Read_Pnl(Controls);
+			}
+		}
+		public string base64String;
+		class Picture_Box {
+			public int x;
+			public int y;
+			public int t;
+			public string path;
+		}
+
+
+		public void ExportPictureBox()
+		{
+			using (Image image = Image.FromFile(filePhotoPath))
+			{
+				using (MemoryStream m = new MemoryStream())
+				{
+					image.Save(m, image.RawFormat);
+					byte[] imageBytes = m.ToArray();
+
+					// Convert byte[] to Base64 String
+					base64String = Convert.ToBase64String(imageBytes);
+				}
+			}
+			List<Picture_Box> saveobj = new List<Picture_Box>();
+			JsonSerializer serializer1 = new JsonSerializer();
+			using (StreamWriter sw = new StreamWriter("SavePictureBox.json"))
+			{
+				using (JsonWriter writer = new JsonTextWriter(sw))
+				{
+					foreach (Control c in Controls)
+					{
+						Picture_Box js = new Picture_Box();
+						js.x = c.Left;
+						js.y = c.Top;
+						js.path = base64String;
+						js.t = 0;
+						saveobj.Add(js);
+					}
+					serializer1.Serialize(writer, saveobj);
+				}
+			}
+		}
+		public void LoadPictureBox() {
+			Controls.Clear();
+			UndoList.Clear();
+			RedoList.Clear();
+			MoveCountUndo.Clear();
+			MoveCountRedo.Clear();
+			string filePath;
+			Image image;
+			List<Picture_Box> selectobj = new List<Picture_Box>();
+			using (FileStream f_p = new FileStream("SavePictureBox.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+
+					string json = file.ReadToEnd();
+					selectobj = JsonConvert.DeserializeObject<List<Picture_Box>>(json);
+					int count = selectobj.Count();
+					//Console.WriteLine(count);
+					PictureBox newPtb = new PictureBox();
+					Panel mypanel1 = new Panel();
+					mypanel1.Size = new Size(50, 50);
+					mypanel1.BackColor = Color.Blue;
+					mypanel1.Location = new Point(selectobj[0].x, selectobj[0].y);
+					newPtb.Tag = selectobj[0].t;
+					newPtb.SizeMode = PictureBoxSizeMode.StretchImage;
+					newPtb.Size = new Size(32, 32);
+					filePath = selectobj[0].path;
+					Byte[] bytes = Convert.FromBase64String(filePath);
+					using (var ms = new MemoryStream(bytes, 0, bytes.Length))
+					{
+						image = Image.FromStream(ms, true);
+						newPtb.Image = image;
+						newPtb.Size = new Size(32, 32);
+						newPtb.Location = new Point(mypanel1.Left + 9, mypanel1.Top + 10);
+						mypanel1.Controls.Add(newPtb);
+					}
+					f_p.Close();
+					Controls.Add(mypanel1);
+					Read_Pnl(Controls);
+				}
+			}//File.WriteAllBytes(path, bytes);
 		}
 	}
+
 }

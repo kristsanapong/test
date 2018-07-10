@@ -223,17 +223,17 @@ namespace SharpConnect
 
 		private void button10_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog opf = new OpenFileDialog();
-			opf.Filter = "Choose Image(*.jpg;*.png)|*.jpg;*.png ";
+			mycontrol11.ImportPictureBox();
+		}
 
-			if (opf.ShowDialog() == DialogResult.OK) {
-				PictureBox newptb = new PictureBox();
-				newptb.Location = new Point(0, 0);
-				var image = Image.FromFile(opf.FileName);
-				newptb.Image = image;
-				mycontrol11.Controls.Add(newptb);
-				//mycontrol11.Read_Pnl(mycontrol11.Controls);
-			}
+		private void button11_Click(object sender, EventArgs e)
+		{
+			mycontrol11.ExportPictureBox();
+		}
+
+		private void button12_Click(object sender, EventArgs e)
+		{
+			mycontrol11.LoadPictureBox();
 		}
 	}
 }
