@@ -510,7 +510,7 @@ namespace SharpConnect
 				UndoList.Add(moveHx);
 				return;
 			}
-			else if (c==1) {
+			else if (c==1 && ModifierKeys != Keys.Control) {
 				Panel pickbTn = (Panel)sender;
 				MoveHx moveHx = UndoList[UndoList.Count - 1];
 				moveHx.target = pickbTn;
@@ -532,6 +532,7 @@ namespace SharpConnect
 				SelectedPanels[0].BackColor = Color.Blue;
 				SelectedPanels.RemoveAt(0);
 			}
+
 			MoveCountUndo.Add(c);
 		}
 		private void Select_MouseMove(object sender, MouseEventArgs e)
