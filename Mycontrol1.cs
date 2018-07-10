@@ -861,7 +861,7 @@ namespace SharpConnect
 			{
 				using (JsonWriter writer = new JsonTextWriter(st))
 				{
-					serializer2.Serialize(writer, MoveCountUndo);
+					serializer3.Serialize(writer, MoveCountUndo);
 				}
 			}
 
@@ -1108,7 +1108,13 @@ namespace SharpConnect
 				}
 			}
 			List<Picture_Box> saveobj = new List<Picture_Box>();
+			List<TargetUndo> saveundo = new List<TargetUndo>();
+			List<SelectUndo> saveselect = new List<SelectUndo>();
 			JsonSerializer serializer1 = new JsonSerializer();
+			JsonSerializer serializer2 = new JsonSerializer();
+			JsonSerializer serializer3 = new JsonSerializer();
+
+
 			using (StreamWriter sw = new StreamWriter("SavePictureBox.json"))
 			{
 				using (JsonWriter writer = new JsonTextWriter(sw))
@@ -1125,6 +1131,71 @@ namespace SharpConnect
 					serializer1.Serialize(writer, saveobj);
 				}
 			}
+			List<int> selectundoobj = new List<int>();
+			using (StreamWriter se = new StreamWriter("History.json"))
+			{
+				using (JsonWriter writer = new JsonTextWriter(se))
+				{
+					foreach (MoveHx c in UndoList)
+					{
+						TargetUndo js = new TargetUndo();
+						js.X = c.x;
+						js.Y = c.y;
+						js.T = (int)c.target.Tag;
+						saveundo.Add(js);
+					}
+					serializer2.Serialize(writer, saveundo);
+				}
+			}
+			using (StreamWriter st = new StreamWriter("ListCountHistory.json"))
+			{
+				using (JsonWriter writer = new JsonTextWriter(st))
+				{
+					serializer3.Serialize(writer, MoveCountUndo);
+				}
+			}
+
+			List<Picture_Box> loadobj = new List<Picture_Box>();
+			using (FileStream f_p = new FileStream("SavePictureBox.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+					SavePanel1 = file.ReadToEnd();
+					loadobj = JsonConvert.DeserializeObject<List<Picture_Box>>(SavePanel1);
+					f_p.Close();
+					//ss.SavePanel = SavePanel1;
+					//string test = wb1.UploadString("http://localhost:8080/JSONLoad/SavePanel", SavePanel1);
+				}
+			}
+
+			List<TargetUndo> undoobj = new List<TargetUndo>();
+			using (FileStream f_p = new FileStream("History.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+
+					History1 = file.ReadToEnd();
+					undoobj = JsonConvert.DeserializeObject<List<TargetUndo>>(History1);
+					f_p.Close();
+					//ss.History = History1;
+
+				}
+			}
+
+			List<int> selectundoobjj = new List<int>();
+			using (FileStream f_p = new FileStream("ListCountHistory.json", FileMode.Open))
+			{
+				using (StreamReader file = new StreamReader(f_p))
+				{
+					ListCountHistory1 = file.ReadToEnd();
+					selectundoobjj = JsonConvert.DeserializeObject<List<int>>(ListCountHistory1);
+					f_p.Close();
+					//ss.ListCountHistory = ListCountHistory1;
+				}
+			}
+			WebClient wb1 = new WebClient();
+			listJSON = SavePanel1 + "|" + History1 + "|" + ListCountHistory1;
+			wb1.UploadString("http://10.80.19.132:8080/JSONLoad/SavePanel", listJSON);
 		}
 		public void LoadPictureBox() {
 			Controls.Clear();

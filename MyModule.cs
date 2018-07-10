@@ -337,6 +337,18 @@ namespace SharpConnect
 			//	}
 			//resp.End(savePanels);
 		}
+		//public void SavePictureBox(HttpRequest req, HttpResponse resp) {
+		//	string content = req.GetBodyContentAsString();
+
+		//	UserUnHxListEventArgs evArgs = new UserUnHxListEventArgs();
+		//	if (DataArrived != null && content.Length > 2)
+		//	{
+		//		evArgs.DataJSON = content;
+		//		//evArgs.MoveCountRedo = null;//TODO: change to history list
+		//		DataArrived(this, evArgs);
+		//	}
+		//	resp.End("Success");
+		//}
 	}
 
 		abstract class A
