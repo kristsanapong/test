@@ -235,5 +235,10 @@ namespace SharpConnect
 		{
 			mycontrol11.LoadPictureBox();
 		}
+
+		private void button13_Click(object sender, EventArgs e)
+		{
+			mycontrol11.Create_Textbox(0,0,"");
+		}
 	}
 }

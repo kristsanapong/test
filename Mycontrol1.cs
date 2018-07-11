@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Net;
 using SharpConnect;
 using SharpConnect.WebServers;
+using Newtonsoft.Json.Linq;
 
 
 namespace SharpConnect
@@ -506,12 +507,15 @@ namespace SharpConnect
 				moveHx.y = UndoList[UndoList.Count - 1].y;
 				moveHx.target.Tag = UndoList[UndoList.Count - 1].target.Tag;
 				Console.WriteLine(pickbTn.Left + "," + pickbTn.Top);
-				UndoList.RemoveAt(UndoList.Count - 1);
+				int x = UndoList.Count;
+
+				UndoList.RemoveAt(x);
 				UndoList.Add(moveHx);
 				return;
 			}
-			else if (c==1 && ModifierKeys != Keys.Control) {
-				Panel pickbTn = (Panel)sender;
+			else if (c == 1 && ModifierKeys != Keys.Control)
+			{
+				Control pickbTn = (Control)sender;
 				MoveHx moveHx = UndoList[UndoList.Count - 1];
 				moveHx.target = pickbTn;
 				moveHx.x = UndoList[UndoList.Count - 1].x;
@@ -521,7 +525,7 @@ namespace SharpConnect
 			}
 			for (int i = 0; i < c; ++i)
 			{
-				Panel selecter = (Panel)sender;
+				Control selecter = (Control)sender;
 				PanelObjectHistory hx = new PanelObjectHistory();
 				hx.targetPanel = selecter;
 				hx.x = selecter.Left;
@@ -537,15 +541,16 @@ namespace SharpConnect
 		}
 		private void Select_MouseMove(object sender, MouseEventArgs e)
 		{
+			if (resize == true) { return; }
 			if (m_ismousedown)
 			{
 				//Console.WriteLine(e.X + "," + e.Y);
 				int dx = e.X - m_lastx;
 				int dy = e.Y - m_lasty;
-				Panel p = (Panel)sender;
+				Control p = (Control)sender;
 				foreach (Control cc in SelectedPanels)
 				{
-					Panel pp = (Panel)cc;
+					Control pp = (Control)cc;
 					pp.Location = new Point(pp.Left + dx, pp.Top + dy);
 				}
 			}
@@ -553,7 +558,7 @@ namespace SharpConnect
 		private void Select_MouseDown(object sender, MouseEventArgs e)
 		{
 			m_ismousedown = true;
-			var p = (Panel)sender;
+			var p = (Control)sender;
 			p.BackColor = Color.Yellow;
 			m_lastx = e.X;
 			m_lasty = e.Y;
@@ -1057,7 +1062,10 @@ namespace SharpConnect
 			}
 
 		}
+
+		//************************************PICTUREBOX********************************************
 		public string filePhotoPath;
+		public int ptbMode = 0;
 		public void ImportPictureBox()
 		{
 			Controls.Clear();
@@ -1084,28 +1092,36 @@ namespace SharpConnect
 				filePhotoPath = opf.FileName;
 				Read_Pnl(Controls);
 			}
+			ptbMode = 0;
 		}
 		public string base64String;
-		class Picture_Box {
+		class Picture_Box
+		{
 			public int x;
 			public int y;
 			public int t;
 			public string path;
 		}
 
-
 		public void ExportPictureBox()
 		{
-			using (Image image = Image.FromFile(filePhotoPath))
+			if (ptbMode == 0)
 			{
-				using (MemoryStream m = new MemoryStream())
+				using (Image image = Image.FromFile(filePhotoPath))
 				{
-					image.Save(m, image.RawFormat);
-					byte[] imageBytes = m.ToArray();
+					using (MemoryStream m = new MemoryStream())
+					{
+						image.Save(m, image.RawFormat);
+						byte[] imageBytes = m.ToArray();
 
-					// Convert byte[] to Base64 String
-					base64String = Convert.ToBase64String(imageBytes);
+						// Convert byte[] to Base64 String
+						base64String = Convert.ToBase64String(imageBytes);
+					}
 				}
+			}
+			else if (ptbMode == 1)
+			{
+				base64String = filePhotoPath;
 			}
 			List<Picture_Box> saveobj = new List<Picture_Box>();
 			List<TargetUndo> saveundo = new List<TargetUndo>();
@@ -1141,7 +1157,7 @@ namespace SharpConnect
 						TargetUndo js = new TargetUndo();
 						js.X = c.x;
 						js.Y = c.y;
-						js.T = (int)c.target.Tag;
+						js.T = 0;
 						saveundo.Add(js);
 					}
 					serializer2.Serialize(writer, saveundo);
@@ -1173,12 +1189,10 @@ namespace SharpConnect
 			{
 				using (StreamReader file = new StreamReader(f_p))
 				{
-
 					History1 = file.ReadToEnd();
 					undoobj = JsonConvert.DeserializeObject<List<TargetUndo>>(History1);
 					f_p.Close();
 					//ss.History = History1;
-
 				}
 			}
 
@@ -1197,7 +1211,8 @@ namespace SharpConnect
 			listJSON = SavePanel1 + "|" + History1 + "|" + ListCountHistory1;
 			wb1.UploadString("http://10.80.19.132:8080/JSONLoad/SavePanel", listJSON);
 		}
-		public void LoadPictureBox() {
+		public void LoadPictureBox()
+		{
 			Controls.Clear();
 			UndoList.Clear();
 			RedoList.Clear();
@@ -1210,7 +1225,6 @@ namespace SharpConnect
 			{
 				using (StreamReader file = new StreamReader(f_p))
 				{
-
 					string json = file.ReadToEnd();
 					selectobj = JsonConvert.DeserializeObject<List<Picture_Box>>(json);
 					int count = selectobj.Count();
@@ -1228,17 +1242,84 @@ namespace SharpConnect
 					using (var ms = new MemoryStream(bytes, 0, bytes.Length))
 					{
 						image = Image.FromStream(ms, true);
+						//FileInfo f = new FileInfo(filePath);
 						newPtb.Image = image;
 						newPtb.Size = new Size(32, 32);
-						newPtb.Location = new Point(mypanel1.Left + 9, mypanel1.Top + 10);
+						newPtb.Location = new Point(9, 10);
+						filePhotoPath = filePath;
 						mypanel1.Controls.Add(newPtb);
 					}
-					f_p.Close();
 					Controls.Add(mypanel1);
 					Read_Pnl(Controls);
+					f_p.Close();
+					ptbMode = 1;
 				}
 			}//File.WriteAllBytes(path, bytes);
 		}
-	}
+		public void Create_Textbox(int x, int y, string text)
+		{
+			TextBox txt = new TextBox();
+			txt.Name = "text" + this.Controls.Count;
+			txt.Text = text;
+			txt.Location = new Point(x, y);
+			txt.Multiline = true;
+			txt.Size = new Size(90, 30);
+			txt.Tag = this.Controls.Count;
+			txt.MouseDown += Txt_MouseDown;
+			txt.MouseMove += Txt_MouseMove;
+			txt.MouseUp += Txt_MouseUp;
+			txt.MouseDown += Select_MouseDown;
+			txt.MouseMove += Select_MouseMove;
+			txt.MouseUp += Select_MouseUp;
 
+			this.Controls.Add(txt);
+
+		}
+		bool resize = false; //textBox
+		private void Txt_MouseUp(object sender, MouseEventArgs e)
+		{
+			resize = false; //finished resize textbox
+		}
+
+		private void Txt_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (resize == false) { return; }
+			if (e.Button == MouseButtons.Left && resize == true)
+			{
+				Control c = (Control)sender;
+				var height = Math.Abs(c.Top + e.Y - c.Location.Y);
+				var width = Math.Abs(c.Left + e.X - c.Location.X);
+				c.Size = new Size(width, height);
+			}
+
+
+		}
+
+
+
+		private void Txt_MouseDown(object sender, MouseEventArgs e)
+		{
+			Control c = (Control)sender;
+			Console.WriteLine(e.Location);
+			Console.WriteLine(c.Size);
+			resize = false;
+			if (Math.Abs(e.X - c.Width) <= 7 && Math.Abs(e.Y - c.Height) <= 7) //bottom right
+			{
+				resize = true;
+			}
+			else if (Math.Abs(e.X - c.Width) <= 7 && e.Y <= 5) //top right
+			{
+				resize = true;
+			}
+			else if (e.X <= 2 && e.Y <= 2) //top left
+			{
+				resize = true;
+			}
+			else if (e.X <= 2 && Math.Abs(e.Y - c.Height) <= 7) // bottom left
+			{
+				resize = true;
+			}
+
+		}
+	}
 }

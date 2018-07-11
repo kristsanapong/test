@@ -48,6 +48,7 @@
 			this.button11 = new System.Windows.Forms.Button();
 			this.mycontrol11 = new SharpConnect.MyControl1();
 			this.button12 = new System.Windows.Forms.Button();
+			this.button13 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -246,12 +247,23 @@
 			this.button12.UseVisualStyleBackColor = true;
 			this.button12.Click += new System.EventHandler(this.button12_Click);
 			// 
+			// button13
+			// 
+			this.button13.Location = new System.Drawing.Point(655, 237);
+			this.button13.Name = "button13";
+			this.button13.Size = new System.Drawing.Size(133, 23);
+			this.button13.TabIndex = 20;
+			this.button13.Text = "Create Textbox";
+			this.button13.UseVisualStyleBackColor = true;
+			this.button13.Click += new System.EventHandler(this.button13_Click);
+			// 
 			// Form2
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.button13);
 			this.Controls.Add(this.button12);
 			this.Controls.Add(this.button11);
 			this.Controls.Add(this.button10);
@@ -302,5 +314,6 @@
 		private System.Windows.Forms.Button button10;
 		private System.Windows.Forms.Button button11;
 		private System.Windows.Forms.Button button12;
+		private System.Windows.Forms.Button button13;
 	}
 }
